@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Yogi Tailors",
+    "slug": "yogi-tailor",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo_final.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/logo.jpg",
+      "resizeMode": "contain",
+      "backgroundColor": "#F5F1EA"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F5F1EA"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.yogitailor"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-localization"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ed14172f-0c17-4944-b7a6-6dc1cbca8a0b"
+      }
+    },
+    "owner": "parmarom"
+  }
+}
