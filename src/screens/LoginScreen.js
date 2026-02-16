@@ -1,4 +1,176 @@
-// import React, { useContext, useState } from "react";
+// // import React, { useContext, useState } from "react";
+// // import {
+// //   View,
+// //   Text,
+// //   TextInput,
+// //   TouchableOpacity,
+// //   KeyboardAvoidingView,
+// //   Platform,
+// //   ScrollView,
+// // } from "react-native";
+// // import { SafeAreaView } from "react-native-safe-area-context";
+// // import { AuthContext } from "../context/AuthContext";
+
+// // export default function LoginScreen({ navigation }) {
+// //   const { login, loading } = useContext(AuthContext);
+
+// //   const [email, setEmail] = useState("");
+// //   const [password, setPassword] = useState("");
+// //   const [error, setError] = useState("");
+
+// //   const handleLogin = async () => {
+// //     setError("");
+
+// //     if (!email.includes("@")) {
+// //       setError("Enter a valid email");
+// //       return;
+// //     }
+
+// //     if (password.length < 4) {
+// //       setError("Password must be at least 4 characters");
+// //       return;
+// //     }
+
+// //     try {
+// //       await login({ email, password });
+
+// //       // ✅ REDIRECT TO HOME AFTER SUCCESSFUL LOGIN
+// //       navigation.replace("Home");
+
+// //     } catch (err) {
+// //       setError("Invalid email or password");
+// //     }
+// //   };
+
+// //   return (
+// //     <View style={{ flex: 1, backgroundColor: "#F4F5F7" }}>
+// //       <SafeAreaView style={{ flex: 1 }}>
+// //         <KeyboardAvoidingView
+// //           style={{ flex: 1 }}
+// //           behavior={Platform.OS === "ios" ? "padding" : "height"}
+// //         >
+// //           {/* TOP SPACE */}
+// //           <View style={{ flex: 0.3 }} />
+
+// //           {/* FORM CARD */}
+// //           <View
+// //             style={{
+// //               flex: 0.7,
+// //               backgroundColor: "#FFFFFF",
+// //               borderTopLeftRadius: 40,
+// //               borderTopRightRadius: 40,
+// //             }}
+// //           >
+// //             <ScrollView
+// //               contentContainerStyle={{ padding: 24 }}
+// //               keyboardShouldPersistTaps="handled"
+// //             >
+// //               <Text style={styles.title}>Welcome Back</Text>
+// //               <Text style={styles.subtitle}>
+// //                 Login to manage your tailor shop
+// //               </Text>
+
+// //               <Text style={styles.label}>Email</Text>
+// //               <TextInput
+// //                 placeholder="Enter your email"
+// //                 value={email}
+// //                 onChangeText={setEmail}
+// //                 autoCapitalize="none"
+// //                 keyboardType="email-address"
+// //                 style={styles.input}
+// //               />
+
+// //               <Text style={styles.label}>Password</Text>
+// //               <TextInput
+// //                 placeholder="Enter your password"
+// //                 secureTextEntry
+// //                 value={password}
+// //                 onChangeText={setPassword}
+// //                 style={styles.input}
+// //               />
+
+// //               {error !== "" && (
+// //                 <Text style={styles.error}>{error}</Text>
+// //               )}
+
+// //               <TouchableOpacity
+// //                 style={styles.button}
+// //                 onPress={handleLogin}
+// //                 disabled={loading}
+// //               >
+// //                 <Text style={styles.buttonText}>
+// //                   {loading ? "Logging in..." : "Login"}
+// //                 </Text>
+// //               </TouchableOpacity>
+
+// //               <View style={styles.bottomText}>
+// //                 <Text>Don’t have an account?</Text>
+// //                 <TouchableOpacity
+// //                   onPress={() => navigation.navigate("Signup")}
+// //                 >
+// //                   <Text style={styles.link}> Sign up</Text>
+// //                 </TouchableOpacity>
+// //               </View>
+// //             </ScrollView>
+// //           </View>
+// //         </KeyboardAvoidingView>
+// //       </SafeAreaView>
+// //     </View>
+// //   );
+// // }
+
+// // const styles = {
+// //   title: {
+// //     fontSize: 26,
+// //     fontWeight: "700",
+// //     textAlign: "center",
+// //     marginBottom: 6,
+// //   },
+// //   subtitle: {
+// //     textAlign: "center",
+// //     color: "#6B7280",
+// //     marginBottom: 24,
+// //   },
+// //   label: {
+// //     fontWeight: "600",
+// //     marginBottom: 6,
+// //   },
+// //   input: {
+// //     borderWidth: 1,
+// //     borderColor: "#E5E7EB",
+// //     borderRadius: 12,
+// //     padding: 14,
+// //     marginBottom: 12,
+// //   },
+// //   button: {
+// //     backgroundColor: "#0F172A",
+// //     paddingVertical: 16,
+// //     borderRadius: 16,
+// //     alignItems: "center",
+// //     marginTop: 10,
+// //   },
+// //   buttonText: {
+// //     color: "#FFFFFF",
+// //     fontSize: 18,
+// //     fontWeight: "700",
+// //   },
+// //   error: {
+// //     color: "red",
+// //     marginBottom: 12,
+// //     textAlign: "center",
+// //   },
+// //   bottomText: {
+// //     flexDirection: "row",
+// //     justifyContent: "center",
+// //     marginTop: 20,
+// //   },
+// //   link: {
+// //     fontWeight: "700",
+// //     color: "#0F172A",
+// //   },
+// // };
+
+// import React, { useContext, useRef, useState } from "react";
 // import {
 //   View,
 //   Text,
@@ -7,112 +179,148 @@
 //   KeyboardAvoidingView,
 //   Platform,
 //   ScrollView,
+//   ImageBackground,
+//   Dimensions,
+//   Animated,
 // } from "react-native";
 // import { SafeAreaView } from "react-native-safe-area-context";
 // import { AuthContext } from "../context/AuthContext";
+
+// const { height } = Dimensions.get("window");
 
 // export default function LoginScreen({ navigation }) {
 //   const { login, loading } = useContext(AuthContext);
 
 //   const [email, setEmail] = useState("");
 //   const [password, setPassword] = useState("");
-//   const [error, setError] = useState("");
+
+//   // 🔔 Toast state
+//   const [toast, setToast] = useState("");
+//   const toastAnim = useRef(new Animated.Value(0)).current;
+
+//   const showToast = (message) => {
+//     setToast(message);
+
+//     Animated.timing(toastAnim, {
+//       toValue: 1,
+//       duration: 200,
+//       useNativeDriver: true,
+//     }).start();
+
+//     setTimeout(() => {
+//       Animated.timing(toastAnim, {
+//         toValue: 0,
+//         duration: 200,
+//         useNativeDriver: true,
+//       }).start(() => setToast(""));
+//     }, 2500);
+//   };
 
 //   const handleLogin = async () => {
-//     setError("");
+//     if (!email.includes("@"))
+//       return showToast("Enter a valid email");
 
-//     if (!email.includes("@")) {
-//       setError("Enter a valid email");
-//       return;
-//     }
-
-//     if (password.length < 4) {
-//       setError("Password must be at least 4 characters");
-//       return;
-//     }
+//     if (password.length < 6)
+//       return showToast("Password must be at least 6 characters");
 
 //     try {
 //       await login({ email, password });
-
-//       // ✅ REDIRECT TO HOME AFTER SUCCESSFUL LOGIN
 //       navigation.replace("Home");
-
-//     } catch (err) {
-//       setError("Invalid email or password");
+//     } catch {
+//       showToast("Invalid email or password");
 //     }
 //   };
 
 //   return (
 //     <View style={{ flex: 1, backgroundColor: "#F4F5F7" }}>
-//       <SafeAreaView style={{ flex: 1 }}>
+//       {/* 🔼 TOP IMAGE */}
+//       <SafeAreaView edges={["top"]}>
+//         <ImageBackground
+//           source={require("../../assets/loginimg.png")}
+//           style={styles.topImage}
+//           resizeMode="contain"
+//         />
+//       </SafeAreaView>
+
+//       {/* ⚪ CARD */}
+//       <SafeAreaView style={styles.cardWrapper}>
 //         <KeyboardAvoidingView
 //           style={{ flex: 1 }}
 //           behavior={Platform.OS === "ios" ? "padding" : "height"}
+//           keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
 //         >
-//           {/* TOP SPACE */}
-//           <View style={{ flex: 0.3 }} />
-
-//           {/* FORM CARD */}
-//           <View
-//             style={{
-//               flex: 0.7,
-//               backgroundColor: "#FFFFFF",
-//               borderTopLeftRadius: 40,
-//               borderTopRightRadius: 40,
-//             }}
+//           <ScrollView
+//             keyboardShouldPersistTaps="handled"
+//             showsVerticalScrollIndicator={false}
+//             contentContainerStyle={styles.scrollContent}
 //           >
-//             <ScrollView
-//               contentContainerStyle={{ padding: 24 }}
-//               keyboardShouldPersistTaps="handled"
+//             <Text style={styles.title}>Welcome Back</Text>
+//             <Text style={styles.subtitle}>
+//               Login to manage your tailor shop
+//             </Text>
+
+//             <Text style={styles.label}>Email</Text>
+//             <TextInput
+//               placeholder="Enter your email"
+//               placeholderTextColor="#6B7280"
+//               value={email}
+//               onChangeText={setEmail}
+//               autoCapitalize="none"
+//               keyboardType="email-address"
+//               style={styles.input}
+//             />
+
+//             <Text style={styles.label}>Password</Text>
+//             <TextInput
+//               placeholder="Enter your password"
+//               placeholderTextColor="#6B7280"
+//               secureTextEntry
+//               value={password}
+//               onChangeText={setPassword}
+//               style={styles.input}
+//             />
+
+//             <TouchableOpacity
+//               style={styles.button}
+//               onPress={handleLogin}
+//               disabled={loading}
 //             >
-//               <Text style={styles.title}>Welcome Back</Text>
-//               <Text style={styles.subtitle}>
-//                 Login to manage your tailor shop
+//               <Text style={styles.buttonText}>
+//                 {loading ? "Logging in..." : "Login"}
 //               </Text>
+//             </TouchableOpacity>
 
-//               <Text style={styles.label}>Email</Text>
-//               <TextInput
-//                 placeholder="Enter your email"
-//                 value={email}
-//                 onChangeText={setEmail}
-//                 autoCapitalize="none"
-//                 keyboardType="email-address"
-//                 style={styles.input}
-//               />
-
-//               <Text style={styles.label}>Password</Text>
-//               <TextInput
-//                 placeholder="Enter your password"
-//                 secureTextEntry
-//                 value={password}
-//                 onChangeText={setPassword}
-//                 style={styles.input}
-//               />
-
-//               {error !== "" && (
-//                 <Text style={styles.error}>{error}</Text>
-//               )}
-
+//             <View style={styles.bottomText}>
+//               <Text>Don’t have an account?</Text>
 //               <TouchableOpacity
-//                 style={styles.button}
-//                 onPress={handleLogin}
-//                 disabled={loading}
+//                 onPress={() => navigation.navigate("Signup")}
 //               >
-//                 <Text style={styles.buttonText}>
-//                   {loading ? "Logging in..." : "Login"}
-//                 </Text>
+//                 <Text style={styles.link}> Sign up</Text>
 //               </TouchableOpacity>
+//             </View>
+//           </ScrollView>
 
-//               <View style={styles.bottomText}>
-//                 <Text>Don’t have an account?</Text>
-//                 <TouchableOpacity
-//                   onPress={() => navigation.navigate("Signup")}
-//                 >
-//                   <Text style={styles.link}> Sign up</Text>
-//                 </TouchableOpacity>
-//               </View>
-//             </ScrollView>
-//           </View>
+//           {/* 🔔 WHATSAPP-STYLE TOAST */}
+//           {toast !== "" && (
+//             <Animated.View
+//               style={[
+//                 styles.toast,
+//                 {
+//                   opacity: toastAnim,
+//                   transform: [
+//                     {
+//                       translateY: toastAnim.interpolate({
+//                         inputRange: [0, 1],
+//                         outputRange: [20, 0],
+//                       }),
+//                     },
+//                   ],
+//                 },
+//               ]}
+//             >
+//               <Text style={styles.toastText}>{toast}</Text>
+//             </Animated.View>
+//           )}
 //         </KeyboardAvoidingView>
 //       </SafeAreaView>
 //     </View>
@@ -120,6 +328,23 @@
 // }
 
 // const styles = {
+//   topImage: {
+//     height: height * 0.34,
+//     width: "100%",
+//   },
+//   cardWrapper: {
+//     flex: 1,
+//     backgroundColor: "#FFFFFF",
+//     borderTopLeftRadius: 40,
+//     borderTopRightRadius: 40,
+//     marginTop: -10,
+//   },
+//   scrollContent: {
+//     paddingHorizontal: 24,
+//     paddingBottom: 80,
+//     paddingTop: 0,   
+//     minHeight: height * 0.66,
+//   },
 //   title: {
 //     fontSize: 26,
 //     fontWeight: "700",
@@ -129,7 +354,7 @@
 //   subtitle: {
 //     textAlign: "center",
 //     color: "#6B7280",
-//     marginBottom: 24,
+//     marginBottom: 28,
 //   },
 //   label: {
 //     fontWeight: "600",
@@ -140,35 +365,51 @@
 //     borderColor: "#E5E7EB",
 //     borderRadius: 12,
 //     padding: 14,
-//     marginBottom: 12,
+//     marginBottom: 14,
+//     color: "#111827",
 //   },
 //   button: {
 //     backgroundColor: "#0F172A",
 //     paddingVertical: 16,
 //     borderRadius: 16,
 //     alignItems: "center",
-//     marginTop: 10,
+//     marginTop: 20,
 //   },
 //   buttonText: {
 //     color: "#FFFFFF",
 //     fontSize: 18,
 //     fontWeight: "700",
 //   },
-//   error: {
-//     color: "red",
-//     marginBottom: 12,
-//     textAlign: "center",
-//   },
 //   bottomText: {
 //     flexDirection: "row",
 //     justifyContent: "center",
-//     marginTop: 20,
+//     marginTop: 26,
 //   },
 //   link: {
 //     fontWeight: "700",
 //     color: "#0F172A",
 //   },
+
+//   /* 🔔 TOAST */
+//   toast: {
+//   position: "absolute",
+//   bottom: 20,
+//   alignSelf: "center",   // ⭐ centers auto-width toast
+//   backgroundColor: "#111827",
+//   paddingVertical: 12,
+//   paddingHorizontal: 18,
+//   borderRadius: 30,     // WhatsApp pill
+//   maxWidth: "90%",      // safety for long text
+//   alignItems: "center",
+// },
+// toastText: {
+//   color: "#FFFFFF",
+//   fontWeight: "600",
+//   textAlign: "center",
+// },
+
 // };
+
 
 import React, { useContext, useRef, useState } from "react";
 import {
@@ -232,7 +473,7 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#F4F5F7" }}>
+    <View style={{ flex: 1, backgroundColor: "#0B1120" }}>
       {/* 🔼 TOP IMAGE */}
       <SafeAreaView edges={["top"]}>
         <ImageBackground
@@ -262,7 +503,7 @@ export default function LoginScreen({ navigation }) {
             <Text style={styles.label}>Email</Text>
             <TextInput
               placeholder="Enter your email"
-              placeholderTextColor="#6B7280"
+              placeholderTextColor="#6B7A90"
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -273,7 +514,7 @@ export default function LoginScreen({ navigation }) {
             <Text style={styles.label}>Password</Text>
             <TextInput
               placeholder="Enter your password"
-              placeholderTextColor="#6B7280"
+              placeholderTextColor="#6B7A90"
               secureTextEntry
               value={password}
               onChangeText={setPassword}
@@ -291,7 +532,7 @@ export default function LoginScreen({ navigation }) {
             </TouchableOpacity>
 
             <View style={styles.bottomText}>
-              <Text>Don’t have an account?</Text>
+              <Text style={styles.bottomTextNormal}>Don't have an account?</Text>
               <TouchableOpacity
                 onPress={() => navigation.navigate("Signup")}
               >
@@ -334,7 +575,7 @@ const styles = {
   },
   cardWrapper: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#1A2332",
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     marginTop: -10,
@@ -346,66 +587,89 @@ const styles = {
     minHeight: height * 0.66,
   },
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: "700",
     textAlign: "center",
-    marginBottom: 6,
+    marginBottom: 8,
+    color: "#FFFFFF",
+    letterSpacing: 0.3,
   },
   subtitle: {
     textAlign: "center",
-    color: "#6B7280",
-    marginBottom: 28,
+    color: "#8A94A6",
+    marginBottom: 32,
+    fontSize: 15,
   },
   label: {
     fontWeight: "600",
-    marginBottom: 6,
+    marginBottom: 8,
+    color: "#E8EAED",
+    fontSize: 15,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 14,
-    color: "#111827",
+    borderWidth: 1.5,
+    borderColor: "#2D3748",
+    backgroundColor: "#0F1621",
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 16,
+    color: "#FFFFFF",
+    fontSize: 15,
   },
   button: {
-    backgroundColor: "#0F172A",
-    paddingVertical: 16,
+    backgroundColor: "#4F7CFF",
+    paddingVertical: 18,
     borderRadius: 16,
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 24,
+    shadowColor: "#4F7CFF",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   buttonText: {
     color: "#FFFFFF",
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "700",
+    letterSpacing: 0.5,
   },
   bottomText: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 26,
+    marginTop: 28,
+  },
+  bottomTextNormal: {
+    color: "#8A94A6",
+    fontSize: 15,
   },
   link: {
     fontWeight: "700",
-    color: "#0F172A",
+    color: "#4F7CFF",
+    fontSize: 15,
   },
 
   /* 🔔 TOAST */
   toast: {
-  position: "absolute",
-  bottom: 20,
-  alignSelf: "center",   // ⭐ centers auto-width toast
-  backgroundColor: "#111827",
-  paddingVertical: 12,
-  paddingHorizontal: 18,
-  borderRadius: 30,     // WhatsApp pill
-  maxWidth: "90%",      // safety for long text
-  alignItems: "center",
-},
-toastText: {
-  color: "#FFFFFF",
-  fontWeight: "600",
-  textAlign: "center",
-},
-
+    position: "absolute",
+    bottom: 20,
+    alignSelf: "center",
+    backgroundColor: "#2D3748",
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    maxWidth: "90%",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  toastText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+    textAlign: "center",
+    fontSize: 14,
+  },
 };
