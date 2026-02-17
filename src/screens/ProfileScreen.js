@@ -1,3 +1,232 @@
+// // import React from 'react';
+// // import {
+// //   View,
+// //   Text,
+// //   StyleSheet,
+// //   ScrollView,
+// //   TouchableOpacity,
+// //   Alert,
+// // } from 'react-native';
+// // import { SafeAreaView } from 'react-native-safe-area-context';
+// // import { Ionicons } from '@expo/vector-icons';
+// // import { useNavigation } from '@react-navigation/native';
+// // import { signOut } from 'firebase/auth';
+// // import { auth } from '../firebaseConfig';
+
+// // export default function ProfileScreen() {
+// //   const navigation = useNavigation();
+// //   const user = auth.currentUser;
+
+// //   const handleLogout = () => {
+// //     Alert.alert(
+// //       'Logout',
+// //       'Are you sure you want to logout?',
+// //       [
+// //         { text: 'Cancel', style: 'cancel' },
+// //         {
+// //           text: 'Logout',
+// //           style: 'destructive',
+// //           onPress: async () => {
+// //             try {
+// //               await signOut(auth);
+// //               navigation.reset({
+// //                 index: 0,
+// //                 routes: [{ name: 'Welcome' }],
+// //               });
+// //             } catch (error) {
+// //               Alert.alert('Error', 'Failed to logout');
+// //             }
+// //           },
+// //         },
+// //       ]
+// //     );
+// //   };
+
+// //   return (
+// //     <SafeAreaView style={styles.container}>
+// //       <ScrollView showsVerticalScrollIndicator={false}>
+        
+// //         {/* Header */}
+// //         <View style={styles.header}>
+// //           <TouchableOpacity onPress={() => navigation.goBack()}>
+// //             <Ionicons name="arrow-back" size={24} color="#F8FAFC" />
+// //           </TouchableOpacity>
+// //           <Text style={styles.headerTitle}>Profile</Text>
+// //           <View style={{ width: 24 }} />
+// //         </View>
+
+// //         {/* Profile Card (Essential) */}
+// //         <View style={styles.profileCard}>
+// //           <View style={styles.avatarLarge}>
+// //             <Text style={styles.avatarLargeText}>
+// //               {user?.email?.charAt(0).toUpperCase() || 'Y'}
+// //             </Text>
+// //           </View>
+// //           <Text style={styles.userName}>Yogi's Tailoring</Text>
+// //           <Text style={styles.userEmail}>
+// //             {user?.email || 'user@example.com'}
+// //           </Text>
+// //         </View>
+
+// //         {/* Business Information (Essential for Tailor App) */}
+// //         <View style={styles.section}>
+// //           <Text style={styles.sectionTitle}>Business Information</Text>
+
+// //           <MenuItem
+// //             icon="business-outline"
+// //             label="Business Name"
+// //             value="Yogi's Tailoring"
+// //           />
+
+// //           <MenuItem
+// //             icon="call-outline"
+// //             label="Phone Number"
+// //             value="+91 98765 43210"
+// //           />
+
+// //           <MenuItem
+// //             icon="location-outline"
+// //             label="Location"
+// //             value="Anand, Gujarat"
+// //           />
+// //         </View>
+
+// //         {/* Logout (MOST IMPORTANT) */}
+// //         <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+// //           <Ionicons name="log-out-outline" size={22} color="#EF4444" />
+// //           <Text style={styles.logoutText}>Logout</Text>
+// //         </TouchableOpacity>
+
+// //         <View style={{ height: 40 }} />
+// //       </ScrollView>
+// //     </SafeAreaView>
+// //   );
+// // }
+
+// // /* Simple Menu Item */
+// // const MenuItem = ({ icon, label, value }) => (
+// //   <View style={styles.menuItem}>
+// //     <View style={styles.menuLeft}>
+// //       <View style={styles.menuIconContainer}>
+// //         <Ionicons name={icon} size={20} color="#3B82F6" />
+// //       </View>
+// //       <Text style={styles.menuLabel}>{label}</Text>
+// //     </View>
+// //     <Text style={styles.menuValue}>{value}</Text>
+// //   </View>
+// // );
+
+// // const styles = StyleSheet.create({
+// //   container: {
+// //     flex: 1,
+// //     backgroundColor: '#0A0E1A',
+// //   },
+// //   header: {
+// //     flexDirection: 'row',
+// //     justifyContent: 'space-between',
+// //     alignItems: 'center',
+// //     paddingHorizontal: 20,
+// //     paddingVertical: 16,
+// //   },
+// //   headerTitle: {
+// //     fontSize: 24,
+// //     fontWeight: '800',
+// //     color: '#F8FAFC',
+// //   },
+// //   profileCard: {
+// //     alignItems: 'center',
+// //     backgroundColor: '#1E293B',
+// //     marginHorizontal: 20,
+// //     marginBottom: 24,
+// //     padding: 24,
+// //     borderRadius: 20,
+// //   },
+// //   avatarLarge: {
+// //     width: 80,
+// //     height: 80,
+// //     borderRadius: 40,
+// //     backgroundColor: '#3B82F6',
+// //     justifyContent: 'center',
+// //     alignItems: 'center',
+// //     marginBottom: 16,
+// //   },
+// //   avatarLargeText: {
+// //     color: '#FFFFFF',
+// //     fontSize: 36,
+// //     fontWeight: '800',
+// //   },
+// //   userName: {
+// //     fontSize: 22,
+// //     fontWeight: '700',
+// //     color: '#F8FAFC',
+// //     marginBottom: 4,
+// //   },
+// //   userEmail: {
+// //     fontSize: 14,
+// //     color: '#94A3B8',
+// //   },
+// //   section: {
+// //     marginBottom: 24,
+// //     paddingHorizontal: 20,
+// //   },
+// //   sectionTitle: {
+// //     fontSize: 16,
+// //     fontWeight: '700',
+// //     color: '#94A3B8',
+// //     marginBottom: 12,
+// //   },
+// //   menuItem: {
+// //     flexDirection: 'row',
+// //     justifyContent: 'space-between',
+// //     alignItems: 'center',
+// //     backgroundColor: '#1E293B',
+// //     padding: 16,
+// //     borderRadius: 12,
+// //     marginBottom: 10,
+// //   },
+// //   menuLeft: {
+// //     flexDirection: 'row',
+// //     alignItems: 'center',
+// //     gap: 12,
+// //   },
+// //   menuIconContainer: {
+// //     width: 40,
+// //     height: 40,
+// //     borderRadius: 20,
+// //     backgroundColor: 'rgba(59, 130, 246, 0.1)',
+// //     justifyContent: 'center',
+// //     alignItems: 'center',
+// //   },
+// //   menuLabel: {
+// //     fontSize: 15,
+// //     fontWeight: '600',
+// //     color: '#E2E8F0',
+// //   },
+// //   menuValue: {
+// //     fontSize: 14,
+// //     color: '#64748B',
+// //     fontWeight: '500',
+// //   },
+// //   logoutBtn: {
+// //     flexDirection: 'row',
+// //     alignItems: 'center',
+// //     justifyContent: 'center',
+// //     backgroundColor: '#450A0A',
+// //     marginHorizontal: 20,
+// //     padding: 16,
+// //     borderRadius: 12,
+// //     gap: 8,
+// //     borderWidth: 1,
+// //     borderColor: '#7F1D1D',
+// //   },
+// //   logoutText: {
+// //     color: '#EF4444',
+// //     fontSize: 16,
+// //     fontWeight: '700',
+// //   },
+// // });
+
+
 // import React from 'react';
 // import {
 //   View,
@@ -12,19 +241,22 @@
 // import { useNavigation } from '@react-navigation/native';
 // import { signOut } from 'firebase/auth';
 // import { auth } from '../firebaseConfig';
+// import { useLanguage } from '../context/LanguageContext';
+// import { LanguageToggle } from '../context/LanguageToggle';
 
 // export default function ProfileScreen() {
 //   const navigation = useNavigation();
+//   const { t } = useLanguage();
 //   const user = auth.currentUser;
 
 //   const handleLogout = () => {
 //     Alert.alert(
-//       'Logout',
-//       'Are you sure you want to logout?',
+//       t.logout || 'Logout',
+//       t.logoutConfirm || 'Are you sure you want to logout?',
 //       [
-//         { text: 'Cancel', style: 'cancel' },
+//         { text: t.cancel || 'Cancel', style: 'cancel' },
 //         {
-//           text: 'Logout',
+//           text: t.logout || 'Logout',
 //           style: 'destructive',
 //           onPress: async () => {
 //             try {
@@ -34,7 +266,7 @@
 //                 routes: [{ name: 'Welcome' }],
 //               });
 //             } catch (error) {
-//               Alert.alert('Error', 'Failed to logout');
+//               Alert.alert(t.error || 'Error', t.logoutFailed || 'Failed to logout');
 //             }
 //           },
 //         },
@@ -51,8 +283,8 @@
 //           <TouchableOpacity onPress={() => navigation.goBack()}>
 //             <Ionicons name="arrow-back" size={24} color="#F8FAFC" />
 //           </TouchableOpacity>
-//           <Text style={styles.headerTitle}>Profile</Text>
-//           <View style={{ width: 24 }} />
+//           <Text style={styles.headerTitle}>{t.profile}</Text>
+//           <LanguageToggle />
 //         </View>
 
 //         {/* Profile Card (Essential) */}
@@ -70,23 +302,23 @@
 
 //         {/* Business Information (Essential for Tailor App) */}
 //         <View style={styles.section}>
-//           <Text style={styles.sectionTitle}>Business Information</Text>
+//           <Text style={styles.sectionTitle}>{t.businessInfo || 'Business Information'}</Text>
 
 //           <MenuItem
 //             icon="business-outline"
-//             label="Business Name"
+//             label={t.businessName || 'Business Name'}
 //             value="Yogi's Tailoring"
 //           />
 
 //           <MenuItem
 //             icon="call-outline"
-//             label="Phone Number"
+//             label={t.phoneNumber || 'Phone Number'}
 //             value="+91 98765 43210"
 //           />
 
 //           <MenuItem
 //             icon="location-outline"
-//             label="Location"
+//             label={t.location || 'Location'}
 //             value="Anand, Gujarat"
 //           />
 //         </View>
@@ -94,7 +326,7 @@
 //         {/* Logout (MOST IMPORTANT) */}
 //         <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
 //           <Ionicons name="log-out-outline" size={22} color="#EF4444" />
-//           <Text style={styles.logoutText}>Logout</Text>
+//           <Text style={styles.logoutText}>{t.logout || 'Logout'}</Text>
 //         </TouchableOpacity>
 
 //         <View style={{ height: 40 }} />
@@ -224,17 +456,17 @@
 //     fontSize: 16,
 //     fontWeight: '700',
 //   },
-// });
+// });/
 
-
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Alert,
+  Modal,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -248,30 +480,27 @@ export default function ProfileScreen() {
   const navigation = useNavigation();
   const { t } = useLanguage();
   const user = auth.currentUser;
+  
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = () => {
-    Alert.alert(
-      t.logout || 'Logout',
-      t.logoutConfirm || 'Are you sure you want to logout?',
-      [
-        { text: t.cancel || 'Cancel', style: 'cancel' },
-        {
-          text: t.logout || 'Logout',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await signOut(auth);
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Welcome' }],
-              });
-            } catch (error) {
-              Alert.alert(t.error || 'Error', t.logoutFailed || 'Failed to logout');
-            }
-          },
-        },
-      ]
-    );
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await signOut(auth);
+      setShowLogoutModal(false);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Welcome' }],
+      });
+    } catch (error) {
+      setIsLoggingOut(false);
+      alert(t.logoutFailed || 'Failed to logout');
+    }
   };
 
   return (
@@ -287,7 +516,7 @@ export default function ProfileScreen() {
           <LanguageToggle />
         </View>
 
-        {/* Profile Card (Essential) */}
+        {/* Profile Card */}
         <View style={styles.profileCard}>
           <View style={styles.avatarLarge}>
             <Text style={styles.avatarLargeText}>
@@ -300,7 +529,7 @@ export default function ProfileScreen() {
           </Text>
         </View>
 
-        {/* Business Information (Essential for Tailor App) */}
+        {/* Business Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t.businessInfo || 'Business Information'}</Text>
 
@@ -323,7 +552,7 @@ export default function ProfileScreen() {
           />
         </View>
 
-        {/* Logout (MOST IMPORTANT) */}
+        {/* Logout Button */}
         <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={22} color="#EF4444" />
           <Text style={styles.logoutText}>{t.logout || 'Logout'}</Text>
@@ -331,6 +560,57 @@ export default function ProfileScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
+
+      {/* 🔥 BEAUTIFUL LOGOUT MODAL */}
+      <Modal
+        visible={showLogoutModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowLogoutModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            
+            {/* Icon */}
+            <View style={styles.modalIconContainer}>
+              <Ionicons name="log-out-outline" size={48} color="#EF4444" />
+            </View>
+
+            {/* Title */}
+            <Text style={styles.modalTitle}>
+              {t.logout || 'Logout'}
+            </Text>
+
+            {/* Message */}
+            <Text style={styles.modalMessage}>
+              {t.logoutConfirm || 'Are you sure you want to logout?'}
+            </Text>
+
+            {/* Buttons */}
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setShowLogoutModal(false)}
+                disabled={isLoggingOut}
+              >
+                <Text style={styles.cancelButtonText}>
+                  {t.cancel || 'Cancel'}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.logoutButton}
+                onPress={confirmLogout}
+                disabled={isLoggingOut}
+              >
+                <Text style={styles.logoutButtonText}>
+                  {isLoggingOut ? 'Logging out...' : t.logout || 'Logout'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -453,6 +733,80 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     color: '#EF4444',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+
+  /* 🔥 BEAUTIFUL MODAL STYLES */
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  modalContent: {
+    backgroundColor: '#1E293B',
+    borderRadius: 24,
+    padding: 32,
+    width: '100%',
+    maxWidth: 360,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  modalIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#F8FAFC',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  modalMessage: {
+    fontSize: 15,
+    color: '#94A3B8',
+    textAlign: 'center',
+    marginBottom: 28,
+    lineHeight: 22,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: '#334155',
+    paddingVertical: 16,
+    borderRadius: 14,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    color: '#E2E8F0',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  logoutButton: {
+    flex: 1,
+    backgroundColor: '#EF4444',
+    paddingVertical: 16,
+    borderRadius: 14,
+    alignItems: 'center',
+  },
+  logoutButtonText: {
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '700',
   },
