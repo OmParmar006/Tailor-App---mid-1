@@ -1,642 +1,4 @@
-
-// // import React, { useContext, useState } from "react";
-// // import {
-// //   View,
-// //   Text,
-// //   TextInput,
-// //   TouchableOpacity,
-// //   KeyboardAvoidingView,
-// //   Platform,
-// //   ScrollView,
-// //   Animated,
-// // } from "react-native";
-// // import { SafeAreaView } from "react-native-safe-area-context";
-// // import { AuthContext } from "../context/AuthContext";
-
-// // export default function SignupScreen({ navigation }) {
-// //   const { signup, loading } = useContext(AuthContext);
-
-// //   const [role, setRole] = useState("Owner");
-// //   const [name, setName] = useState("");
-// //   const [phone, setPhone] = useState("");
-// //   const [email, setEmail] = useState("");
-// //   const [password, setPassword] = useState("");
-// //   const [confirmPassword, setConfirmPassword] = useState("");
-
-// //   // 🔔 Toast state
-// //   const [toast, setToast] = useState("");
-// //   const [toastType, setToastType] = useState("success");
-// //   const toastAnim = useState(new Animated.Value(300))[0];
-
-// //   // 🔔 Toast function (TOP-RIGHT, AUTO SIZE)
-// //   const showToast = (message, type = "success") => {
-// //     setToast(message);
-// //     setToastType(type);
-
-// //     Animated.timing(toastAnim, {
-// //       toValue: 0,
-// //       duration: 300,
-// //       useNativeDriver: true,
-// //     }).start();
-
-// //     setTimeout(() => {
-// //       Animated.timing(toastAnim, {
-// //         toValue: 300,
-// //         duration: 300,
-// //         useNativeDriver: true,
-// //       }).start(() => setToast(""));
-// //     }, 2500);
-// //   };
-
-// //   // ✅ SIGNUP HANDLER
-// //   const handleSignup = async () => {
-// //     if (!name.trim())
-// //       return showToast("Name is required", "error");
-
-// //     if (!phone.trim() || phone.length < 10)
-// //       return showToast("Enter a valid phone number", "error");
-
-// //     if (!email.includes("@"))
-// //       return showToast("Invalid email address", "error");
-
-// //     if (password.length < 6)
-// //       return showToast("Password must be at least 6 characters", "error");
-
-// //     if (password !== confirmPassword)
-// //       return showToast("Passwords do not match", "error");
-
-// //     try {
-// //       await signup({ name, phone, email, password, role });
-
-// //       showToast(
-// //         "Account created successfully"
-// //       );
-
-// //       setTimeout(() => {
-// //         navigation.navigate("Login");
-// //       }, 2000);
-// //     } catch (err) {
-// //       const code = err.code;
-
-// //       if (code === "auth/email-already-in-use") {
-// //         showToast("Email already in use", "error");
-// //       } else if (code === "auth/invalid-email") {
-// //         showToast("Invalid email address", "error");
-// //       } else if (code === "auth/weak-password") {
-// //         showToast("Password must be at least 6 characters", "error");
-// //       } else {
-// //         showToast("Signup failed. Please try again.", "error");
-// //       }
-// //     }
-// //   };
-
-// //   return (
-// //     <View style={{ flex: 1, backgroundColor: "#F4F5F7" }}>
-// //       <SafeAreaView style={{ flex: 1 }}>
-// //         <KeyboardAvoidingView
-// //           style={{ flex: 1 }}
-// //           behavior={Platform.OS === "ios" ? "padding" : "height"}
-// //         >
-// //           <View style={{ flex: 0.25 }} />
-
-// //           <View style={styles.card}>
-// //             <ScrollView
-// //               contentContainerStyle={{ padding: 24 }}
-// //               keyboardShouldPersistTaps="handled"
-// //             >
-// //               <Text style={styles.title}>Create Account</Text>
-
-// //               {/* ROLE TOGGLE */}
-// //               <View style={styles.toggle}>
-// //                 {["Owner", "Customer"].map((item) => (
-// //                   <TouchableOpacity
-// //                     key={item}
-// //                     onPress={() => setRole(item)}
-// //                     style={[
-// //                       styles.toggleBtn,
-// //                       role === item && styles.toggleActive,
-// //                     ]}
-// //                   >
-// //                     <Text
-// //                       style={{
-// //                         color: role === item ? "#fff" : "#374151",
-// //                         fontWeight: "700",
-// //                       }}
-// //                     >
-// //                       {item}
-// //                     </Text>
-// //                   </TouchableOpacity>
-// //                 ))}
-// //               </View>
-
-// //               {/* INPUTS */}
-// //               <TextInput
-// //                 placeholder="Full Name"
-// //                 value={name}
-// //                 onChangeText={setName}
-// //                 style={styles.input}
-// //               />
-
-// //               <TextInput
-// //                 placeholder="Phone Number"
-// //                 value={phone}
-// //                 onChangeText={setPhone}
-// //                 keyboardType="phone-pad"
-// //                 style={styles.input}
-// //               />
-
-// //               <TextInput
-// //                 placeholder="Email"
-// //                 value={email}
-// //                 onChangeText={setEmail}
-// //                 autoCapitalize="none"
-// //                 keyboardType="email-address"
-// //                 style={styles.input}
-// //               />
-
-// //               <TextInput
-// //                 placeholder="Password"
-// //                 secureTextEntry
-// //                 value={password}
-// //                 onChangeText={setPassword}
-// //                 style={styles.input}
-// //               />
-
-// //               <TextInput
-// //                 placeholder="Confirm Password"
-// //                 secureTextEntry
-// //                 value={confirmPassword}
-// //                 onChangeText={setConfirmPassword}
-// //                 style={styles.input}
-// //               />
-
-// //               <TouchableOpacity
-// //                 style={styles.button}
-// //                 onPress={handleSignup}
-// //                 disabled={loading}
-// //               >
-// //                 <Text style={styles.buttonText  }>
-// //                   {loading ? "Creating..." : `Sign up as ${role}`}
-// //                 </Text>
-// //               </TouchableOpacity>
-
-// //               <TouchableOpacity onPress={() => navigation.goBack()}>
-// //                 <Text style={styles.link}>
-// //                   Already have an account? Login
-// //                 </Text>
-// //               </TouchableOpacity>
-// //             </ScrollView>
-// //           </View>
-// //         </KeyboardAvoidingView>
-
-// //         {/* 🔔 TOAST (AUTO WIDTH, TOP-RIGHT) */}
-// //         {toast !== "" && (
-// //           <Animated.View
-// //             style={{
-// //               position: "absolute",
-// //               top: 50,
-// //               right: 20,
-// //               maxWidth: "85%",
-// //               alignSelf: "flex-end",
-// //               backgroundColor:
-// //                 toastType === "success" ? "#ECFDF5" : "#FEF2F2",
-// //               borderLeftWidth: 5,
-// //               borderLeftColor:
-// //                 toastType === "success" ? "#10B981" : "#EF4444",
-// //               paddingVertical: 12,
-// //               paddingHorizontal: 16,
-// //               borderRadius: 14,
-// //               transform: [{ translateX: toastAnim }],
-// //             }}
-// //           >
-// //             <Text
-// //               style={{
-// //                 color:
-// //                   toastType === "success" ? "#065F46" : "#7F1D1D",
-// //                 fontWeight: "600",
-// //               }}
-// //             >
-// //               {toast}
-// //             </Text>
-// //           </Animated.View>
-// //         )}
-// //       </SafeAreaView>
-// //     </View>
-// //   );
-// // }
-
-// // const styles = {
-// //   card: {
-// //     flex: 0.75,
-// //     backgroundColor: "#FFFFFF",
-// //     borderTopLeftRadius: 40,
-// //     borderTopRightRadius: 40,
-// //   },
-// //   title: {
-// //     fontSize: 26,
-// //     fontWeight: "700",
-// //     textAlign: "center",
-// //     marginBottom: 20,
-// //   },
-// //   toggle: {
-// //     flexDirection: "row",
-// //     backgroundColor: "#E5E7EB",
-// //     borderRadius: 14,
-// //     padding: 4,
-// //     marginBottom: 20,
-// //   },
-// //   toggleBtn: {
-// //     flex: 1,
-// //     paddingVertical: 10,
-// //     borderRadius: 12,
-// //     alignItems: "center",
-// //   },
-// //   toggleActive: {
-// //     backgroundColor: "#0F172A",
-// //   },
-// //   input: {
-// //     borderWidth: 1,
-// //     borderColor: "#E5E7EB",
-// //     borderRadius: 12,
-// //     padding: 14,
-// //     marginBottom: 12,
-// //     color: "#111827",
-// //   },
-// //   button: {
-// //     backgroundColor: "#0F172A",
-// //     paddingVertical: 16,
-// //     borderRadius: 16,
-// //     alignItems: "center",
-// //     marginTop: 10,
-// //   },
-// //   buttonText: {
-// //     color: "#FFFFFF",
-// //     fontSize: 18,
-// //     fontWeight: "700",
-// //   },
-// //   link: {
-// //     textAlign: "center",
-// //     marginTop: 20,
-// //     color: "#0F172A",
-// //     fontWeight: "700",
-// //   },
-// // };
-
-
-
-// import React, { useContext, useRef, useState } from "react";
-// import {
-//   View,
-//   Text,
-//   TextInput,
-//   TouchableOpacity,
-//   KeyboardAvoidingView,
-//   Platform,
-//   ScrollView,
-//   ImageBackground,
-//   Dimensions,
-//   Animated,
-// } from "react-native";
-// import { SafeAreaView } from "react-native-safe-area-context";
-// import { AuthContext } from "../context/AuthContext";
-
-// const { height } = Dimensions.get("window");
-
-// export default function SignupScreen({ navigation }) {
-//   const { signup, loading } = useContext(AuthContext);
-
-//   const [role, setRole] = useState("Owner");
-//   const [name, setName] = useState("");
-//   const [phone, setPhone] = useState("");
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [confirmPassword, setConfirmPassword] = useState("");
-
-//   const [showPassword, setShowPassword] = useState(false);
-//   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-//   // 🔔 Toast
-//   const [toast, setToast] = useState("");
-//   const toastAnim = useRef(new Animated.Value(0)).current;
-
-//   const showToast = (message) => {
-//     setToast(message);
-
-//     Animated.timing(toastAnim, {
-//       toValue: 1,
-//       duration: 200,
-//       useNativeDriver: true,
-//     }).start();
-
-//     setTimeout(() => {
-//       Animated.timing(toastAnim, {
-//         toValue: 0,
-//         duration: 200,
-//         useNativeDriver: true,
-//       }).start(() => setToast(""));
-//     }, 2500);
-//   };
-
-//   const handleSignup = async () => {
-//     if (!name.trim())
-//       return showToast("Name is required");
-
-//     if (!phone.trim() || phone.length < 10)
-//       return showToast("Enter valid phone number");
-
-//     if (!email.includes("@"))
-//       return showToast("Invalid email address");
-
-//     if (password.length < 6)
-//       return showToast("Password must be at least 6 characters");
-
-//     if (password !== confirmPassword)
-//       return showToast("Passwords do not match");
-
-//     try {
-//       await signup({ name, phone, email, password, role });
-//       showToast("Account created successfully");
-
-//       setTimeout(() => navigation.navigate("Login"), 1800);
-//     } catch (err) {
-//       if (err.code === "auth/email-already-in-use")
-//         showToast("Email already in use");
-//       else
-//         showToast("Signup failed. Try again");
-//     }
-//   };
-
-//   return (
-//     <View style={{ flex: 1, backgroundColor: "#F4F5F7" }}>
-//       {/* 🔼 TOP IMAGE */}
-//       <SafeAreaView edges={["top"]}>
-//         <ImageBackground
-//           source={require("../../assets/signupimg.png")}
-//           style={styles.topImage}
-//           resizeMode="contain"
-//         />
-//       </SafeAreaView>
-
-//       {/* ⚪ CARD */}
-//       <SafeAreaView style={styles.cardWrapper}>
-//         <KeyboardAvoidingView
-//           style={{ flex: 1 }}
-//           behavior={Platform.OS === "ios" ? "padding" : "height"}
-//           keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
-//         >
-//           <ScrollView
-//             keyboardShouldPersistTaps="handled"
-//             showsVerticalScrollIndicator={false}
-//             contentContainerStyle={styles.scrollContent}
-//           >
-//             <Text style={styles.title}>Create Account</Text>
-
-//             {/* ROLE */}
-//             <View style={styles.toggle}>
-//               {["Owner", "Customer"].map((item) => (
-//                 <TouchableOpacity
-//                   key={item}
-//                   onPress={() => setRole(item)}
-//                   style={[
-//                     styles.toggleBtn,
-//                     role === item && styles.toggleActive,
-//                   ]}
-//                 >
-//                   <Text
-//                     style={{
-//                       color: role === item ? "#fff" : "#374151",
-//                       fontWeight: "700",
-//                     }}
-//                   >
-//                     {item}
-//                   </Text>
-//                 </TouchableOpacity>
-//               ))}
-//             </View>
-
-//             <TextInput
-//               placeholder="Full Name"
-//               placeholderTextColor="#6B7280"
-//               value={name}
-//               onChangeText={setName}
-//               style={styles.input}
-//             />
-
-//             <TextInput
-//               placeholder="Phone Number"
-//               placeholderTextColor="#6B7280"
-//               value={phone}
-//               onChangeText={setPhone}
-//               keyboardType="phone-pad"
-//               style={styles.input}
-//             />
-
-//             <TextInput
-//               placeholder="Email"
-//               placeholderTextColor="#6B7280"
-//               value={email}
-//               onChangeText={setEmail}
-//               autoCapitalize="none"
-//               keyboardType="email-address"
-//               style={styles.input}
-//             />
-
-//             {/* 🔐 PASSWORD ROW */}
-//             <View style={styles.passwordRow}>
-//               <View style={styles.passwordBox}>
-//                 <TextInput
-//                   placeholder="Password"
-//                   placeholderTextColor="#6B7280"
-//                   secureTextEntry={!showPassword}
-//                   value={password}
-//                   onChangeText={setPassword}
-//                   style={styles.passwordInput}
-//                 />
-//                 <TouchableOpacity
-//                   onPress={() => setShowPassword(!showPassword)}
-//                 >
-//                   <Text style={styles.eye}>
-//                     {showPassword ? "🙈" : "👁️"}
-//                   </Text>
-//                 </TouchableOpacity>
-//               </View>
-
-//               <View style={styles.passwordBox}>
-//                 <TextInput
-//                   placeholder="Confirm"
-//                   placeholderTextColor="#6B7280"
-//                   secureTextEntry={!showConfirmPassword}
-//                   value={confirmPassword}
-//                   onChangeText={setConfirmPassword}
-//                   style={styles.passwordInput}
-//                 />
-//                 <TouchableOpacity
-//                   onPress={() =>
-//                     setShowConfirmPassword(!showConfirmPassword)
-//                   }
-//                 >
-//                   <Text style={styles.eye}>
-//                     {showConfirmPassword ? "🙈" : "👁️"}
-//                   </Text>
-//                 </TouchableOpacity>
-//               </View>
-//             </View>
-
-//             <TouchableOpacity
-//               style={styles.button}
-//               onPress={handleSignup}
-//               disabled={loading}
-//             >
-//               <Text style={styles.buttonText}>
-//                 {loading ? "Creating..." : `Sign up as ${role}`}
-//               </Text>
-//             </TouchableOpacity>
-
-//             <TouchableOpacity onPress={() => navigation.goBack()}>
-//               <Text style={styles.link}>
-//                 Already have an account? Login
-//               </Text>
-//             </TouchableOpacity>
-//           </ScrollView>
-
-//           {/* 🔔 WHATSAPP-STYLE AUTO-WIDTH TOAST */}
-//           {toast !== "" && (
-//             <Animated.View
-//               style={[
-//                 styles.toast,
-//                 {
-//                   opacity: toastAnim,
-//                   transform: [
-//                     {
-//                       translateY: toastAnim.interpolate({
-//                         inputRange: [0, 1],
-//                         outputRange: [20, 0],
-//                       }),
-//                     },
-//                   ],
-//                 },
-//               ]}
-//             >
-//               <Text style={styles.toastText}>{toast}</Text>
-//             </Animated.View>
-//           )}
-//         </KeyboardAvoidingView>
-//       </SafeAreaView>
-//     </View>
-//   );
-// }
-
-// const styles = {
-//   topImage: {
-//     height: height * 0.34,
-//     width: "100%",
-//   },
-//   cardWrapper: {
-//     flex: 1,
-//     backgroundColor: "#FFFFFF",
-//     borderTopLeftRadius: 40,
-//     borderTopRightRadius: 40,
-//     marginTop: -10,
-//   },
-//   scrollContent: {
-//     paddingHorizontal: 24,
-//     paddingBottom: 80,
-//     paddingTop: 0,   
-//     minHeight: height * 0.66,
-//   },
-//   title: {
-//     fontSize: 26,
-//     fontWeight: "700",
-//     textAlign: "center",
-//     marginBottom: 20,
-//   },
-
-//   toggle: {
-//     flexDirection: "row",
-//     backgroundColor: "#E5E7EB",
-//     borderRadius: 14,
-//     padding: 4,
-//     marginBottom: 22,
-//   },
-//   toggleBtn: {
-//     flex: 1,
-//     paddingVertical: 10,
-//     borderRadius: 12,
-//     alignItems: "center",
-//   },
-//   toggleActive: {
-//     backgroundColor: "#0F172A",
-//   },
-
-//   input: {
-//     borderWidth: 1,
-//     borderColor: "#E5E7EB",
-//     borderRadius: 12,
-//     padding: 14,
-//     marginBottom: 14,
-//     color: "#111827",
-//   },
-
-//   passwordRow: {
-//     flexDirection: "row",
-//     gap: 10,
-//     marginBottom: 14,
-//   },
-//   passwordBox: {
-//     flex: 1,
-//     flexDirection: "row",
-//     alignItems: "center",
-//     borderWidth: 1,
-//     borderColor: "#E5E7EB",
-//     borderRadius: 12,
-//     paddingHorizontal: 12,
-//   },
-//   passwordInput: {
-//     flex: 1,
-//     paddingVertical: 14,
-//   },
-//   eye: {
-//     fontSize: 16,
-//   },
-
-//   button: {
-//     backgroundColor: "#0F172A",
-//     paddingVertical: 16,
-//     borderRadius: 16,
-//     alignItems: "center",
-//     marginTop: 10,
-//   },
-//   buttonText: {
-//     color: "#FFFFFF",
-//     fontSize: 18,
-//     fontWeight: "700",
-//   },
-//   link: {
-//     textAlign: "center",
-//     marginTop: 22,
-//     fontWeight: "700",
-//     color: "#0F172A",
-//   },
-
-//   /* 🔔 AUTO-WIDTH WHATSAPP STYLE TOAST */
-//   toast: {
-//     position: "absolute",
-//     bottom: 20,
-//     alignSelf: "center",
-//     backgroundColor: "#111827",
-//     paddingVertical: 12,
-//     paddingHorizontal: 18,
-//     borderRadius: 30,
-//     maxWidth: "90%",
-//   },
-//   toastText: {
-//     color: "#FFFFFF",
-//     fontWeight: "600",
-//     textAlign: "center",
-//   },
-// };
-
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -645,14 +7,15 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  ImageBackground,
   Dimensions,
   Animated,
+  StatusBar,
+  StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "../context/AuthContext";
 
-const { height } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 export default function SignupScreen({ navigation }) {
   const { signup, loading } = useContext(AuthContext);
@@ -663,351 +26,520 @@ export default function SignupScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
+  const [toast, setToast] = useState({ msg: "", success: false });
 
-  // 🔔 Toast
-  const [toast, setToast] = useState("");
+  const phoneRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const confirmRef = useRef(null);
   const toastAnim = useRef(new Animated.Value(0)).current;
+  const btnScale = useRef(new Animated.Value(1)).current;
 
-  const showToast = (message) => {
-    setToast(message);
+  // Staggered entry anims
+  const anims = Array.from({ length: 9 }, () => useRef(new Animated.Value(0)).current);
 
-    Animated.timing(toastAnim, {
-      toValue: 1,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
+  useEffect(() => {
+    Animated.stagger(
+      70,
+      anims.map((a) =>
+        Animated.timing(a, { toValue: 1, duration: 400, useNativeDriver: true })
+      )
+    ).start();
+  }, []);
 
-    setTimeout(() => {
-      Animated.timing(toastAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }).start(() => setToast(""));
-    }, 2500);
+  const slide = (a) => ({
+    opacity: a,
+    transform: [{ translateY: a.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
+  });
+
+  const showToast = (msg, success = false) => {
+    setToast({ msg, success });
+    Animated.sequence([
+      Animated.timing(toastAnim, { toValue: 1, duration: 250, useNativeDriver: true }),
+      Animated.delay(2400),
+      Animated.timing(toastAnim, { toValue: 0, duration: 250, useNativeDriver: true }),
+    ]).start(() => setToast({ msg: "", success: false }));
   };
 
   const handleSignup = async () => {
-    if (!name.trim())
-      return showToast("Name is required");
+    if (!name.trim()) return showToast("Full name is required");
+    if (!phone.trim() || phone.length < 10) return showToast("Enter a valid phone number");
+    if (!email.includes("@")) return showToast("Invalid email address");
+    if (password.length < 6) return showToast("Password must be at least 6 characters");
+    if (password !== confirmPassword) return showToast("Passwords do not match");
 
-    if (!phone.trim() || phone.length < 10)
-      return showToast("Enter valid phone number");
-
-    if (!email.includes("@"))
-      return showToast("Invalid email address");
-
-    if (password.length < 6)
-      return showToast("Password must be at least 6 characters");
-
-    if (password !== confirmPassword)
-      return showToast("Passwords do not match");
+    Animated.sequence([
+      Animated.timing(btnScale, { toValue: 0.96, duration: 80, useNativeDriver: true }),
+      Animated.timing(btnScale, { toValue: 1, duration: 80, useNativeDriver: true }),
+    ]).start();
 
     try {
       await signup({ name, phone, email, password, role });
-      showToast("Account created successfully");
-
-      setTimeout(() => navigation.navigate("Login"), 1800);
+      showToast("Account created successfully!", true);
+      setTimeout(() => navigation.replace("Home"), 1400);
     } catch (err) {
-      if (err.code === "auth/email-already-in-use")
-        showToast("Email already in use");
-      else
-        showToast("Signup failed. Try again");
+      if (err.code === "auth/email-already-in-use") showToast("Email already in use");
+      else if (err.code === "auth/weak-password") showToast("Password is too weak");
+      else showToast("Signup failed. Please try again");
     }
   };
 
-  return (
-    <View style={{ flex: 1, backgroundColor: "#0B1120" }}>
-      {/* 🔼 TOP IMAGE */}
-      <SafeAreaView edges={["top"]}>
-        <ImageBackground
-          source={require("../../assets/signupimg.png")}
-          style={styles.topImage}
-          resizeMode="contain"
-        />
-      </SafeAreaView>
+  const iw = (f) => [styles.inputWrap, focusedField === f && styles.inputFocused];
 
-      {/* ⚪ CARD */}
-      <SafeAreaView style={styles.cardWrapper}>
+  return (
+    <View style={styles.root}>
+      <StatusBar barStyle="light-content" backgroundColor="#0F1623" />
+
+      <View style={styles.bgAccentTop} />
+      <View style={styles.bgAccentBottom} />
+
+      <SafeAreaView style={{ flex: 1 }} edges={["top", "bottom"]}>
         <KeyboardAvoidingView
           style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <ScrollView
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={styles.scroll}
+            bounces={false}
           >
-            <Text style={styles.title}>Create Account</Text>
-
-            {/* ROLE */}
-            <View style={styles.toggle}>
-              {["Owner", "Customer"].map((item) => (
-                <TouchableOpacity
-                  key={item}
-                  onPress={() => setRole(item)}
-                  style={[
-                    styles.toggleBtn,
-                    role === item && styles.toggleActive,
-                  ]}
-                >
-                  <Text
-                    style={{
-                      color: role === item ? "#FFFFFF" : "#8A94A6",
-                      fontWeight: "700",
-                      fontSize: 15,
-                    }}
-                  >
-                    {item}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <TextInput
-              placeholder="Full Name"
-              placeholderTextColor="#6B7A90"
-              value={name}
-              onChangeText={setName}
-              style={styles.input}
-            />
-
-            <TextInput
-              placeholder="Phone Number"
-              placeholderTextColor="#6B7A90"
-              value={phone}
-              onChangeText={setPhone}
-              keyboardType="phone-pad"
-              style={styles.input}
-            />
-
-            <TextInput
-              placeholder="Email"
-              placeholderTextColor="#6B7A90"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              style={styles.input}
-            />
-
-            {/* 🔐 PASSWORD ROW */}
-            <View style={styles.passwordRow}>
-              <View style={styles.passwordBox}>
-                <TextInput
-                  placeholder="Password"
-                  placeholderTextColor="#6B7A90"
-                  secureTextEntry={!showPassword}
-                  value={password}
-                  onChangeText={setPassword}
-                  style={styles.passwordInput}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                >
-                  <Text style={styles.eye}>
-                    {showPassword ? "🙈" : "👁️"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.passwordBox}>
-                <TextInput
-                  placeholder="Confirm"
-                  placeholderTextColor="#6B7A90"
-                  secureTextEntry={!showConfirmPassword}
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  style={styles.passwordInput}
-                />
-                <TouchableOpacity
-                  onPress={() =>
-                    setShowConfirmPassword(!showConfirmPassword)
-                  }
-                >
-                  <Text style={styles.eye}>
-                    {showConfirmPassword ? "🙈" : "👁️"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleSignup}
-              disabled={loading}
-            >
-              <Text style={styles.buttonText}>
-                {loading ? "Creating..." : `Sign up as ${role}`}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Text style={styles.link}>
-                Already have an account? Login
-              </Text>
-            </TouchableOpacity>
-          </ScrollView>
-
-          {/* 🔔 WHATSAPP-STYLE AUTO-WIDTH TOAST */}
-          {toast !== "" && (
-            <Animated.View
-              style={[
-                styles.toast,
-                {
-                  opacity: toastAnim,
-                  transform: [
-                    {
-                      translateY: toastAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [20, 0],
-                      }),
-                    },
-                  ],
-                },
-              ]}
-            >
-              <Text style={styles.toastText}>{toast}</Text>
+            {/* ── Back + Header ── */}
+            <Animated.View style={[styles.topRow, slide(anims[0])]}>
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={styles.backBtn}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Text style={styles.backArrow}>←</Text>
+              </TouchableOpacity>
             </Animated.View>
-          )}
+
+            <Animated.View style={slide(anims[1])}>
+              <Text style={styles.heading}>Create account</Text>
+              <Text style={styles.subheading}>Fill in your details to get started</Text>
+            </Animated.View>
+
+            {/* ── Role Toggle ── */}
+            <Animated.View style={[slide(anims[2]), { marginBottom: 24 }]}>
+              <Text style={styles.label}>I am a</Text>
+              <View style={styles.roleWrap}>
+                {["Owner", "Customer"].map((item) => (
+                  <TouchableOpacity
+                    key={item}
+                    onPress={() => setRole(item)}
+                    style={[styles.roleBtn, role === item && styles.roleBtnActive]}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={[styles.roleText, role === item && styles.roleTextActive]}>
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </Animated.View>
+
+            {/* ── Fields ── */}
+            <Animated.View style={slide(anims[3])}>
+              <Text style={styles.label}>Full name</Text>
+              <View style={iw("name")}>
+                <TextInput
+                  placeholder="John Doe"
+                  placeholderTextColor="#3C4A5E"
+                  value={name}
+                  onChangeText={setName}
+                  style={styles.textInput}
+                  returnKeyType="next"
+                  onSubmitEditing={() => phoneRef.current?.focus()}
+                  onFocus={() => setFocusedField("name")}
+                  onBlur={() => setFocusedField(null)}
+                />
+              </View>
+            </Animated.View>
+
+            <Animated.View style={slide(anims[4])}>
+              <Text style={styles.label}>Phone number</Text>
+              <View style={iw("phone")}>
+                <TextInput
+                  ref={phoneRef}
+                  placeholder="+91 98765 43210"
+                  placeholderTextColor="#3C4A5E"
+                  value={phone}
+                  onChangeText={setPhone}
+                  keyboardType="phone-pad"
+                  style={styles.textInput}
+                  returnKeyType="next"
+                  onSubmitEditing={() => emailRef.current?.focus()}
+                  onFocus={() => setFocusedField("phone")}
+                  onBlur={() => setFocusedField(null)}
+                />
+              </View>
+            </Animated.View>
+
+            <Animated.View style={slide(anims[5])}>
+              <Text style={styles.label}>Email address</Text>
+              <View style={iw("email")}>
+                <TextInput
+                  ref={emailRef}
+                  placeholder="you@example.com"
+                  placeholderTextColor="#3C4A5E"
+                  value={email}
+                  onChangeText={setEmail}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  style={styles.textInput}
+                  returnKeyType="next"
+                  onSubmitEditing={() => passwordRef.current?.focus()}
+                  onFocus={() => setFocusedField("email")}
+                  onBlur={() => setFocusedField(null)}
+                />
+              </View>
+            </Animated.View>
+
+            <Animated.View style={slide(anims[6])}>
+              <Text style={styles.label}>Password</Text>
+              <View style={styles.passwordRow}>
+                <View style={[iw("password"), { flex: 1 }]}>
+                  <TextInput
+                    ref={passwordRef}
+                    placeholder="Min. 6 characters"
+                    placeholderTextColor="#3C4A5E"
+                    secureTextEntry={!showPassword}
+                    value={password}
+                    onChangeText={setPassword}
+                    style={[styles.textInput, { flex: 1 }]}
+                    returnKeyType="next"
+                    onSubmitEditing={() => confirmRef.current?.focus()}
+                    onFocus={() => setFocusedField("password")}
+                    onBlur={() => setFocusedField(null)}
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Text style={styles.eyeIcon}>{showPassword ? "○" : "●"}</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View style={{ width: 10 }} />
+
+                <View style={[iw("confirm"), { flex: 1 }]}>
+                  <TextInput
+                    ref={confirmRef}
+                    placeholder="Confirm"
+                    placeholderTextColor="#3C4A5E"
+                    secureTextEntry={!showConfirmPassword}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    style={[styles.textInput, { flex: 1 }]}
+                    returnKeyType="done"
+                    onSubmitEditing={handleSignup}
+                    onFocus={() => setFocusedField("confirm")}
+                    onBlur={() => setFocusedField(null)}
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Text style={styles.eyeIcon}>{showConfirmPassword ? "○" : "●"}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Animated.View>
+
+            {/* ── Button ── */}
+            <Animated.View style={[slide(anims[7]), { transform: [{ scale: btnScale }] }]}>
+              <TouchableOpacity
+                style={[styles.btn, loading && styles.btnLoading]}
+                onPress={handleSignup}
+                disabled={loading}
+                activeOpacity={1}
+              >
+                {loading ? (
+                  <View style={styles.btnLoadingRow}>
+                    <View style={styles.loadingDot} />
+                    <View style={[styles.loadingDot, { marginHorizontal: 5 }]} />
+                    <View style={styles.loadingDot} />
+                  </View>
+                ) : (
+                  <Text style={styles.btnText}>Create account</Text>
+                )}
+              </TouchableOpacity>
+            </Animated.View>
+
+            {/* ── Login link ── */}
+            <Animated.View style={[slide(anims[8]), styles.loginRow]}>
+              <Text style={styles.loginPrompt}>Already have an account?</Text>
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+              >
+                <Text style={styles.loginLink}>  Sign in</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
+
+      {/* Toast */}
+      {toast.msg !== "" && (
+        <Animated.View
+          style={[
+            styles.toast,
+            toast.success && styles.toastSuccess,
+            {
+              opacity: toastAnim,
+              transform: [
+                {
+                  translateY: toastAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [10, 0],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <View style={[styles.toastDot, toast.success && styles.toastDotSuccess]} />
+          <Text style={styles.toastText}>{toast.msg}</Text>
+        </Animated.View>
+      )}
     </View>
   );
 }
 
-const styles = {
-  topImage: {
-    height: height * 0.34,
-    width: "100%",
-  },
-  cardWrapper: {
+const styles = StyleSheet.create({
+  root: {
     flex: 1,
-    backgroundColor: "#1A2332",
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
-    marginTop: -10,
+    backgroundColor: "#0F1623",
   },
-  scrollContent: {
-    paddingHorizontal: 24,
-    paddingBottom: 80,
-    paddingTop: 0,   
-    minHeight: height * 0.66,
+  bgAccentTop: {
+    position: "absolute",
+    top: -100,
+    right: -80,
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    backgroundColor: "rgba(56, 139, 253, 0.07)",
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "700",
-    textAlign: "center",
-    marginBottom: 24,
-    color: "#FFFFFF",
-    letterSpacing: 0.3,
+  bgAccentBottom: {
+    position: "absolute",
+    bottom: -80,
+    left: -60,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: "rgba(56, 139, 253, 0.04)",
   },
 
-  toggle: {
-    flexDirection: "row",
-    backgroundColor: "#0F1621",
-    borderRadius: 14,
-    padding: 5,
-    marginBottom: 24,
-    borderWidth: 1.5,
-    borderColor: "#2D3748",
+  scroll: {
+    flexGrow: 1,
+    paddingHorizontal: 28,
+    paddingTop: height * 0.05,
+    paddingBottom: 48,
   },
-  toggleBtn: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 11,
+
+  // Top row
+  topRow: {
+    marginBottom: 28,
+  },
+  backBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: "#161E2E",
+    borderWidth: 1,
+    borderColor: "#1E2C42",
     alignItems: "center",
+    justifyContent: "center",
   },
-  toggleActive: {
-    backgroundColor: "#4F7CFF",
-  },
-
-  input: {
-    borderWidth: 1.5,
-    borderColor: "#2D3748",
-    backgroundColor: "#0F1621",
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 16,
-    color: "#FFFFFF",
-    fontSize: 15,
-  },
-
-  passwordRow: {
-    flexDirection: "row",
-    gap: 12,
-    marginBottom: 16,
-  },
-  passwordBox: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1.5,
-    borderColor: "#2D3748",
-    backgroundColor: "#0F1621",
-    borderRadius: 14,
-    paddingHorizontal: 14,
-  },
-  passwordInput: {
-    flex: 1,
-    paddingVertical: 16,
-    color: "#FFFFFF",
-    fontSize: 15,
-  },
-  eye: {
+  backArrow: {
+    color: "#8A9BB5",
     fontSize: 18,
-    paddingLeft: 8,
+    lineHeight: 20,
   },
 
-  button: {
-    backgroundColor: "#4F7CFF",
-    paddingVertical: 18,
-    borderRadius: 16,
+  // Headings
+  heading: {
+    fontSize: 26,
+    fontWeight: "700",
+    color: "#E8EDF5",
+    letterSpacing: -0.5,
+    marginBottom: 6,
+  },
+  subheading: {
+    fontSize: 14,
+    color: "#4A5A72",
+    marginBottom: 28,
+  },
+
+  // Labels
+  label: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#8A9BB5",
+    marginBottom: 8,
+    letterSpacing: 0.1,
+  },
+
+  // Role toggle
+  roleWrap: {
+    flexDirection: "row",
+    backgroundColor: "#161E2E",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#1E2C42",
+    padding: 4,
+  },
+  roleBtn: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 7,
     alignItems: "center",
-    marginTop: 12,
-    shadowColor: "#4F7CFF",
+  },
+  roleBtnActive: {
+    backgroundColor: "#388BFD",
+    shadowColor: "#388BFD",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 8,
+    elevation: 4,
   },
-  buttonText: {
-    color: "#FFFFFF",
-    fontSize: 17,
-    fontWeight: "700",
-    letterSpacing: 0.5,
+  roleText: {
+    color: "#4A5A72",
+    fontSize: 14,
+    fontWeight: "600",
   },
-  link: {
-    textAlign: "center",
-    marginTop: 24,
+  roleTextActive: {
+    color: "#fff",
     fontWeight: "700",
-    color: "#4F7CFF",
-    fontSize: 15,
   },
 
-  /* 🔔 AUTO-WIDTH WHATSAPP STYLE TOAST */
-  toast: {
-    position: "absolute",
-    bottom: 20,
-    alignSelf: "center",
-    backgroundColor: "#2D3748",
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 30,
-    maxWidth: "90%",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+  // Inputs
+  inputWrap: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#161E2E",
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: "#1E2C42",
+    paddingHorizontal: 16,
+    height: 52,
+    marginBottom: 18,
   },
-  toastText: {
-    color: "#FFFFFF",
-    fontWeight: "600",
-    textAlign: "center",
+  inputFocused: {
+    borderColor: "#388BFD",
+    backgroundColor: "#172035",
+  },
+  textInput: {
+    flex: 1,
+    color: "#E8EDF5",
+    fontSize: 15,
+    paddingVertical: 0,
+  },
+  eyeIcon: {
+    color: "#3C4A5E",
+    fontSize: 12,
+    paddingLeft: 8,
+  },
+  passwordRow: {
+    flexDirection: "row",
+    marginBottom: 2,
+  },
+
+  // Button
+  btn: {
+    backgroundColor: "#388BFD",
+    borderRadius: 12,
+    height: 52,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 6,
+    marginBottom: 8,
+    shadowColor: "#388BFD",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  btnLoading: {
+    backgroundColor: "#2A6ECF",
+  },
+  btnText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700",
+    letterSpacing: 0.2,
+  },
+  btnLoadingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  loadingDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: "rgba(255,255,255,0.6)",
+  },
+
+  // Login link
+  loginRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  loginPrompt: {
+    color: "#4A5A72",
     fontSize: 14,
   },
-};
+  loginLink: {
+    color: "#388BFD",
+    fontSize: 14,
+    fontWeight: "700",
+  },
+
+  // Toast
+  toast: {
+    position: "absolute",
+    bottom: 36,
+    alignSelf: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#161E2E",
+    paddingVertical: 13,
+    paddingHorizontal: 18,
+    borderRadius: 12,
+    maxWidth: width - 48,
+    borderWidth: 1,
+    borderColor: "#1E2C42",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  toastSuccess: {
+    borderColor: "#238636",
+  },
+  toastDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: "#CF6679",
+    marginRight: 10,
+    flexShrink: 0,
+  },
+  toastDotSuccess: {
+    backgroundColor: "#3FB950",
+  },
+  toastText: {
+    color: "#C8D3E0",
+    fontSize: 13,
+    fontWeight: "500",
+    flexShrink: 1,
+  },
+});
