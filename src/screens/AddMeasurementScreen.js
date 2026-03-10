@@ -1,2176 +1,169 @@
-// // // import React, { useState } from "react";
-// // // import { db } from "../firebaseConfig";
-// // // import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-// // // import {
-// // //   View,
-// // //   Text,
-// // //   StyleSheet,
-// // //   TouchableOpacity,
-// // //   ScrollView,
-// // //   TextInput,
-// // //   Modal,
-// // //   Alert,
-// // // } from "react-native";
-// // // import { SafeAreaView } from "react-native-safe-area-context";
-// // // import { Ionicons } from "@expo/vector-icons";
-// // // import { TabRouter } from "@react-navigation/native";
-
-// // // /* ---------------- DATA ---------------- */
-
-// // // const GARMENTS = [
-// // //   "Shirt",
-// // //   "Pant",
-// // //   "Kurta",
-// // //   "Safari",
-// // //   "Coti",
-// // //   "Blazer",
-// // //   "Suit",
-// // // ];
-
-// // // const FIT_PRESETS = {
-// // //   Slim: -0.5,
-// // //   Regular: 0,
-// // //   Loose: 0.5,
-// // // };
-
-// // // const MEASUREMENTS = {
-// // //   Shirt: {
-// // //     "Body Size": [
-// // //       "Chest",
-// // //       "Stomach (Pet)",
-// // //       "Seat (Hip)",
-// // //       "Shoulder",
-// // //       "Back",
-// // //     ],
-// // //     Sleeves: [
-// // //       "Sleeve Length",
-// // //       "Sleeve Round",
-// // //       "Sleeve End",
-// // //     ],
-// // //     Neck: [
-// // //       "Collar",
-// // //       "Front Neck",
-// // //       "Back Neck",
-// // //     ],
-// // //     Length: ["Shirt Length"],
-// // //   },
-
-// // //   Pant: {
-// // //     "Upper Part": ["Waist", "Seat (Hip)"],
-// // //     Legs: ["Thigh", "Knee", "Calf", "Bottom"],
-// // //     Length: ["Full Length", "Inside Length", "Seat Length"],
-// // //   },
-
-// // //   Kurta: {
-// // //     "Body Size": [
-// // //       "Chest",
-// // //       "Stomach (Pet)",
-// // //       "Seat (Hip)",
-// // //       "Shoulder",
-// // //     ],
-// // //     Sleeves: ["Sleeve Length", "Sleeve End"],
-// // //     Length: ["Kurta Length"],
-// // //   },
-
-// // //   Safari: {
-// // //     "Body Size": [
-// // //       "Chest",
-// // //       "Stomach (Pet)",
-// // //       "Seat (Hip)",
-// // //       "Shoulder",
-// // //     ],
-// // //     Sleeves: ["Sleeve Length", "Armhole"],
-// // //     Length: ["Safari Length"],
-// // //   },
-
-// // //   Coti: {
-// // //     "Body Size": [
-// // //       "Chest",
-// // //       "Stomach (Pet)",
-// // //       "Seat (Hip)",
-// // //       "Shoulder",
-// // //     ],
-// // //     Length: ["Coti Length"],
-// // //   },
-
-// // //   Blazer: {
-// // //     "Body Size": [
-// // //       "Chest",
-// // //       "Stomach (Pet)",
-// // //       "Seat (Hip)",
-// // //       "Shoulder",
-// // //       "Back",
-// // //     ],
-// // //     Sleeves: ["Sleeve Length", "Armhole"],
-// // //     Length: ["Blazer Length"],
-// // //   },
-
-// // //   Suit: {
-// // //     "Jacket Size": [
-// // //       "Chest",
-// // //       "Stomach (Pet)",
-// // //       "Seat (Hip)",
-// // //       "Shoulder",
-// // //       "Sleeve Length",
-// // //       "Back",
-// // //     ],
-// // //     "Pant Size": [
-// // //       "Waist",
-// // //       "Seat (Hip)",
-// // //       "Thigh",
-// // //       "Bottom",
-// // //       "Full Length",
-// // //     ],
-// // //   },
-// // // };
-
-// // // /* ---------------- SCREEN ---------------- */
-
-// // // export default function AddMeasurementScreen({ navigation,route }) {
-// // //   const {customerId} = route.params;
-// // //   const [activeGarment, setActiveGarment] = useState("Shirt");
-// // //   const [data, setData] = useState({});
-// // //   const [pickerOpen, setPickerOpen] = useState(false);
-// // //   const [fitType, setFitType] = useState("Regular");
-
-// // //   const updateValue = (field, value) => {
-// // //     setData((prev) => ({
-// // //       ...prev,
-// // //       [activeGarment]: {
-// // //         ...(prev[activeGarment] || {}),
-// // //         [field]: value,
-// // //       },
-// // //     }));
-// // //   };
-
-// // //   const applyFitPreset = (type) => {
-// // //     const offset = FIT_PRESETS[type];
-// // //     const updated = {};
-
-// // //     Object.values(MEASUREMENTS[activeGarment])
-// // //       .flat()
-// // //       .forEach((f) => {
-// // //         const base = parseFloat(data?.[activeGarment]?.[f] || 0);
-// // //         if (!isNaN(base)) {
-// // //           updated[f] = (base + offset).toFixed(1);
-// // //         }
-// // //       });
-
-// // //     setData((prev) => ({
-// // //       ...prev,
-// // //       [activeGarment]: {
-// // //         ...(prev[activeGarment] || {}),
-// // //         ...updated,
-// // //       },
-// // //     }));
-
-// // //     setFitType(type);
-// // //   };
-
-// // //   const handleSave = async () => {
-// // //   try {
-// // //     await addDoc(collection(db, "measurements"), {
-// // //       customerId,                     // comes from route.params
-// // //       garment: activeGarment,
-// // //       fitType,
-// // //       values: data[activeGarment] || {},
-// // //       createdAt: serverTimestamp(),
-// // //     });
-
-// // //     Alert.alert(
-// // //       "Saved",
-// // //       `${activeGarment} measurements saved (${fitType} fit)`
-// // //     );
-
-// // //     navigation.navigate("Home");
-// // //   } catch (error) {
-// // //     Alert.alert("Error", "Failed to save measurements");
-// // //   }
-// // // };
-
-
-// // //   return (
-// // //     <SafeAreaView style={styles.safe}>
-// // //       {/* HEADER */}
-// // //       <View style={styles.header}>
-// // //         <TouchableOpacity onPress={() => navigation.goBack()}>
-// // //           <Ionicons name="arrow-back" size={22} color="#E5E7EB" />
-// // //         </TouchableOpacity>
-// // //         <Text style={styles.headerTitle}>Take Measurements</Text>
-// // //         <View style={{ width: 22 }} />
-// // //       </View>
-
-// // //       {/* GARMENT PICKER */}
-// // //       <TouchableOpacity
-// // //         style={styles.garmentPicker}
-// // //         onPress={() => setPickerOpen(true)}
-// // //       >
-// // //         <Text style={styles.smallLabel}>Garment</Text>
-// // //         <View style={styles.rowBetween}>
-// // //           <Text style={styles.valueText}>{activeGarment}</Text>
-// // //           <Ionicons name="chevron-down" size={18} color="#94A3B8" />
-// // //         </View>
-// // //       </TouchableOpacity>
-
-// // //       {/* FIT PRESET */}
-// // //       <View style={styles.fitRow}>
-// // //         {Object.keys(FIT_PRESETS).map((f) => (
-// // //           <TouchableOpacity
-// // //             key={f}
-// // //             style={[
-// // //               styles.fitChip,
-// // //               fitType === f && styles.fitChipActive,
-// // //             ]}
-// // //             onPress={() => applyFitPreset(f)}
-// // //           >
-// // //             <Text
-// // //               style={[
-// // //                 styles.fitText,
-// // //                 fitType === f && styles.fitTextActive,
-// // //               ]}
-// // //             >
-// // //               {f}
-// // //             </Text>
-// // //           </TouchableOpacity>
-// // //         ))}
-// // //       </View>
-
-// // //       {/* FORM */}
-// // //       <ScrollView contentContainerStyle={styles.form}>
-// // //         {Object.entries(MEASUREMENTS[activeGarment]).map(
-// // //           ([section, fields]) => (
-// // //             <View key={section} style={styles.card}>
-// // //               <Text style={styles.cardTitle}>{section}</Text>
-// // //               <View style={styles.divider} />
-
-// // //               {fields.map((field) => (
-// // //                 <View key={field} style={styles.measureRow}>
-// // //                   <Text style={styles.measureLabel}>{field}</Text>
-
-// // //                   <View style={styles.measureInputWrap}>
-// // //                     <TextInput
-// // //                       style={styles.measureInput}
-// // //                       keyboardType="numeric"
-// // //                       placeholder="0"
-// // //                       placeholderTextColor="#64748B"
-// // //                       value={data?.[activeGarment]?.[field] || ""}
-// // //                       onChangeText={(v) => updateValue(field, v)}
-// // //                     />
-// // //                     <Text style={styles.unit}>in</Text>
-// // //                   </View>
-// // //                 </View>
-// // //               ))}
-// // //             </View>
-// // //           )
-// // //         )}
-// // //       </ScrollView>
-
-// // //       {/* SAVE */}
-// // //       <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-// // //         <Text style={styles.saveText}>Save Measurements</Text>
-// // //       </TouchableOpacity>
-
-// // //       {/* GARMENT MODAL */}
-// // //       <Modal transparent visible={pickerOpen} animationType="slide">
-// // //         <View style={styles.modalBg}>
-// // //           <View style={styles.modalCard}>
-// // //             <Text style={styles.modalTitle}>Select Garment</Text>
-// // //             {GARMENTS.map((g) => (
-// // //               <TouchableOpacity
-// // //                 key={g}
-// // //                 style={styles.modalItem}
-// // //                 onPress={() => {
-// // //                   setActiveGarment(g);
-// // //                   setPickerOpen(false);
-// // //                 }}
-// // //               >
-// // //                 <Text style={styles.modalText}>{g}</Text>
-// // //               </TouchableOpacity>
-// // //             ))}
-// // //           </View>
-// // //         </View>
-// // //       </Modal>
-// // //     </SafeAreaView>
-// // //   );
-// // // }
-
-// // // /* ---------------- STYLES ---------------- */
-
-// // // const styles = StyleSheet.create({
-// // //   safe: { flex: 1, backgroundColor: "#0B1121" },
-
-// // //   header: {
-// // //     flexDirection: "row",
-// // //     justifyContent: "space-between",
-// // //     padding: 20,
-// // //   },
-// // //   headerTitle: {
-// // //     color: "#FFFFFF",
-// // //     fontSize: 18,
-// // //     fontWeight: "700",
-// // //   },
-
-// // //   garmentPicker: {
-// // //     marginHorizontal: 16,
-// // //     marginBottom: 10,
-// // //     padding: 14,
-// // //     borderRadius: 16,
-// // //     backgroundColor: "#151E32",
-// // //     borderWidth: 1,
-// // //     borderColor: "#1E293B",
-// // //   },
-// // //   smallLabel: { color: "#94A3B8", fontSize: 11 },
-// // //   rowBetween: {
-// // //     flexDirection: "row",
-// // //     justifyContent: "space-between",
-// // //     alignItems: "center",
-// // //   },
-// // //   valueText: { color: "#E2E8F0", fontSize: 16 },
-
-// // //   fitRow: {
-// // //     flexDirection: "row",
-// // //     justifyContent: "space-around",
-// // //     marginBottom: 10,
-// // //   },
-// // //   fitChip: {
-// // //     paddingHorizontal: 18,
-// // //     paddingVertical: 10,
-// // //     borderRadius: 20,
-// // //     backgroundColor: "#1E293B",
-// // //   },
-// // //   fitChipActive: {
-// // //     backgroundColor: "#2563EB",
-// // //   },
-// // //   fitText: { color: "#CBD5E1", fontWeight: "600" },
-// // //   fitTextActive: { color: "#FFFFFF" },
-
-// // //   form: { padding: 16, paddingBottom: 120 },
-
-// // //   card: {
-// // //     backgroundColor: "#151E32",
-// // //     borderRadius: 18,
-// // //     padding: 16,
-// // //     marginBottom: 16,
-// // //     borderWidth: 1,
-// // //     borderColor: "#1E293B",
-// // //   },
-// // //   cardTitle: {
-// // //     color: "#E2E8F0",
-// // //     fontSize: 15,
-// // //     fontWeight: "700",
-// // //   },
-// // //   divider: {
-// // //     height: 1,
-// // //     backgroundColor: "#1E293B",
-// // //     marginVertical: 10,
-// // //   },
-
-// // //   /* ---- ALIGNED MEASUREMENT ROW ---- */
-// // //   measureRow: {
-// // //     flexDirection: "row",
-// // //     alignItems: "center",
-// // //     marginBottom: 12,
-// // //   },
-// // //   measureLabel: {
-// // //     flex: 1,
-// // //     color: "#CBD5E1",
-// // //     fontSize: 14,
-// // //     paddingRight: 8,
-// // //   },
-// // //   measureInputWrap: {
-// // //     flexDirection: "row",
-// // //     alignItems: "center",
-// // //     backgroundColor: "#0F172A",
-// // //     borderRadius: 12,
-// // //     borderWidth: 1,
-// // //     borderColor: "#1E293B",
-// // //     paddingHorizontal: 10,
-// // //     width: 120,
-// // //     height: 42,
-// // //   },
-// // //   measureInput: {
-// // //     flex: 1,
-// // //     color: "#FFFFFF",
-// // //     fontSize: 15,
-// // //     textAlign: "center",
-// // //   },
-// // //   unit: {
-// // //     color: "#94A3B8",
-// // //     fontSize: 12,
-// // //     marginLeft: 4,
-// // //   },
-
-// // //   saveBtn: {
-// // //     position: "absolute",
-// // //     bottom: 20,
-// // //     left: 20,
-// // //     right: 20,
-// // //     backgroundColor: "#2563EB",
-// // //     paddingVertical: 16,
-// // //     borderRadius: 16,
-// // //     alignItems: "center",
-// // //   },
-// // //   saveText: {
-// // //     color: "#FFFFFF",
-// // //     fontSize: 16,
-// // //     fontWeight: "700",
-// // //   },
-
-// // //   modalBg: {
-// // //     flex: 1,
-// // //     backgroundColor: "rgba(0,0,0,0.6)",
-// // //     justifyContent: "flex-end",
-// // //   },
-// // //   modalCard: {
-// // //     backgroundColor: "#0F172A",
-// // //     padding: 20,
-// // //     borderTopLeftRadius: 20,
-// // //     borderTopRightRadius: 20,
-// // //   },
-// // //   modalTitle: {
-// // //     color: "#FFFFFF",
-// // //     fontSize: 16,
-// // //     fontWeight: "700",
-// // //     marginBottom: 10,
-// // //   },
-// // //   modalItem: {
-// // //     paddingVertical: 14,
-// // //     borderBottomWidth: 1,
-// // //     borderBottomColor: "#1E293B",
-// // //   },
-// // //   modalText: {
-// // //     color: "#CBD5E1",
-// // //     fontSize: 15,
-// // //   },
-// // // });
-
-
-
-// // import React, { useState, useRef } from "react";
-// // import { db } from "../firebaseConfig";
-// // import {
-// //   View,
-// //   Text,
-// //   StyleSheet,
-// //   TouchableOpacity,
-// //   ScrollView,
-// //   TextInput,
-// //   Modal,
-// //   Alert,
-// //   Animated,
-// // } from "react-native";
-// // import { SafeAreaView } from "react-native-safe-area-context";
-// // import { Ionicons } from "@expo/vector-icons";
-// // import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-
-// // /* ---------------- DATA ---------------- */
-
-// // const GARMENTS = [
-// //   "Shirt",
-// //   "Pant",
-// //   "Kurta",
-// //   "Safari",
-// //   "Coti",
-// //   "Blazer",
-// //   "Suit",
-// // ];
-
-// // const FIT_PRESETS = {
-// //   Slim: -0.5,
-// //   Regular: 0,
-// //   Loose: 0.5,
-// // };
-
-// // const MEASUREMENTS = {
-// //   Shirt: {
-// //     "Body Size": [
-// //       "Chest",
-// //       "Stomach (Pet)",
-// //       "Seat (Hip)",
-// //       "Shoulder",
-// //       "Back",
-// //     ],
-// //     Sleeves: [
-// //       "Sleeve Length",
-// //       "Sleeve Round",
-// //       "Sleeve End",
-// //     ],
-// //     Neck: [
-// //       "Collar",
-// //       "Front Neck",
-// //       "Back Neck",
-// //     ],
-// //     Length: ["Shirt Length"],
-// //   },
-
-// //   Pant: {
-// //     "Upper Part": ["Waist", "Seat (Hip)"],
-// //     Legs: ["Thigh", "Knee", "Calf", "Bottom"],
-// //     Length: ["Full Length", "Inside Length", "Seat Length"],
-// //   },
-
-// //   Kurta: {
-// //     "Body Size": [
-// //       "Chest",
-// //       "Stomach (Pet)",
-// //       "Seat (Hip)",
-// //       "Shoulder",
-// //     ],
-// //     Sleeves: ["Sleeve Length", "Sleeve End"],
-// //     Length: ["Kurta Length"],
-// //   },
-
-// //   Safari: {
-// //     "Body Size": [
-// //       "Chest",
-// //       "Stomach (Pet)",
-// //       "Seat (Hip)",
-// //       "Shoulder",
-// //     ],
-// //     Sleeves: ["Sleeve Length", "Armhole"],
-// //     Length: ["Safari Length"],
-// //   },
-
-// //   Coti: {
-// //     "Body Size": [
-// //       "Chest",
-// //       "Stomach (Pet)",
-// //       "Seat (Hip)",
-// //       "Shoulder",
-// //     ],
-// //     Length: ["Coti Length"],
-// //   },
-
-// //   Blazer: {
-// //     "Body Size": [
-// //       "Chest",
-// //       "Stomach (Pet)",
-// //       "Seat (Hip)",
-// //       "Shoulder",
-// //       "Back",
-// //     ],
-// //     Sleeves: ["Sleeve Length", "Armhole"],
-// //     Length: ["Blazer Length"],
-// //   },
-
-// //   Suit: {
-// //     "Jacket Size": [
-// //       "Chest",
-// //       "Stomach (Pet)",
-// //       "Seat (Hip)",
-// //       "Shoulder",
-// //       "Sleeve Length",
-// //       "Back",
-// //     ],
-// //     "Pant Size": [
-// //       "Waist",
-// //       "Seat (Hip)",
-// //       "Thigh",
-// //       "Bottom",
-// //       "Full Length",
-// //     ],
-// //   },
-// // };
-
-// // /* ---------------- SCREEN ---------------- */
-
-// // export default function AddMeasurementScreen({ navigation, route }) {
-// //   const { customerId } = route?.params || {};
-
-// //   const [activeGarment, setActiveGarment] = useState("Shirt");
-// //   const [data, setData] = useState({});
-// //   const [pickerOpen, setPickerOpen] = useState(false);
-// //   const [fitType, setFitType] = useState("Regular");
-
-// //   /* 🔔 TOAST STATE (OVERLAY ONLY) */
-// //   const [toastMsg, setToastMsg] = useState("");
-// //   const toastAnim = useRef(new Animated.Value(300)).current;
-
-// //   const showToast = (message) => {
-// //     setToastMsg(message);
-
-// //     Animated.timing(toastAnim, {
-// //       toValue: 0,
-// //       duration: 300,
-// //       useNativeDriver: true,
-// //     }).start();
-
-// //     setTimeout(() => {
-// //       Animated.timing(toastAnim, {
-// //         toValue: 300,
-// //         duration: 300,
-// //         useNativeDriver: true,
-// //       }).start(() => setToastMsg(""));
-// //     }, 2000);
-// //   };
-
-// //   const updateValue = (field, value) => {
-// //     setData((prev) => ({
-// //       ...prev,
-// //       [activeGarment]: {
-// //         ...(prev[activeGarment] || {}),
-// //         [field]: value,
-// //       },
-// //     }));
-// //   };
-
-// //   const applyFitPreset = (type) => {
-// //     const offset = FIT_PRESETS[type];
-// //     const updated = {};
-
-// //     Object.values(MEASUREMENTS[activeGarment])
-// //       .flat()
-// //       .forEach((f) => {
-// //         const base = parseFloat(data?.[activeGarment]?.[f] || 0);
-// //         if (!isNaN(base)) {
-// //           updated[f] = (base + offset).toFixed(1);
-// //         }
-// //       });
-
-// //     setData((prev) => ({
-// //       ...prev,
-// //       [activeGarment]: {
-// //         ...(prev[activeGarment] || {}),
-// //         ...updated,
-// //       },
-// //     }));
-
-// //     setFitType(type);
-// //   };
-
-// //   /* ✅ VALIDATION (LOGIC ONLY) */
-// //   const allMeasurementsFilled = () => {
-// //     const fields = Object.values(MEASUREMENTS[activeGarment]).flat();
-// //     return fields.every(
-// //       (f) =>
-// //         data?.[activeGarment]?.[f] &&
-// //         data[activeGarment][f].toString().trim() !== ""
-// //     );
-// //   };
-
-// //   const handleSave = async () => {
-// //     if (!allMeasurementsFilled()) {
-// //       Alert.alert(
-// //         "Incomplete",
-// //         "Please fill all measurement fields"
-// //       );
-// //       return;
-// //     }
-
-// //     try {
-// //       await addDoc(collection(db, "measurements"), {
-// //         customerId,
-// //         garment: activeGarment,
-// //         fitType,
-// //         values: data[activeGarment],
-// //         createdAt: serverTimestamp(),
-// //       });
-
-// //       showToast("All measurements saved successfully");
-
-// //       setTimeout(() => {
-// //         navigation.navigate("Home");
-// //       }, 800);
-// //     } catch (error) {
-// //       Alert.alert("Error", "Failed to save measurements");
-// //     }
-// //   };
-
-// //   return (
-// //     <SafeAreaView style={styles.safe}>
-// //       {/* HEADER */}
-// //       <View style={styles.header}>
-// //         <TouchableOpacity onPress={() => navigation.goBack()}>
-// //           <Ionicons name="arrow-back" size={22} color="#E5E7EB" />
-// //         </TouchableOpacity>
-// //         <Text style={styles.headerTitle}>Take Measurements</Text>
-// //         <View style={{ width: 22 }} />
-// //       </View>
-
-// //       {/* GARMENT PICKER */}
-// //       <TouchableOpacity
-// //         style={styles.garmentPicker}
-// //         onPress={() => setPickerOpen(true)}
-// //       >
-// //         <Text style={styles.smallLabel}>Garment</Text>
-// //         <View style={styles.rowBetween}>
-// //           <Text style={styles.valueText}>{activeGarment}</Text>
-// //           <Ionicons name="chevron-down" size={18} color="#94A3B8" />
-// //         </View>
-// //       </TouchableOpacity>
-
-// //       {/* FIT PRESET */}
-// //       <View style={styles.fitRow}>
-// //         {Object.keys(FIT_PRESETS).map((f) => (
-// //           <TouchableOpacity
-// //             key={f}
-// //             style={[
-// //               styles.fitChip,
-// //               fitType === f && styles.fitChipActive,
-// //             ]}
-// //             onPress={() => applyFitPreset(f)}
-// //           >
-// //             <Text
-// //               style={[
-// //                 styles.fitText,
-// //                 fitType === f && styles.fitTextActive,
-// //               ]}
-// //             >
-// //               {f}
-// //             </Text>
-// //           </TouchableOpacity>
-// //         ))}
-// //       </View>
-
-// //       {/* FORM */}
-// //       <ScrollView contentContainerStyle={styles.form}>
-// //         {Object.entries(MEASUREMENTS[activeGarment]).map(
-// //           ([section, fields]) => (
-// //             <View key={section} style={styles.card}>
-// //               <Text style={styles.cardTitle}>{section}</Text>
-// //               <View style={styles.divider} />
-
-// //               {fields.map((field) => (
-// //                 <View key={field} style={styles.measureRow}>
-// //                   <Text style={styles.measureLabel}>{field}</Text>
-
-// //                   <View style={styles.measureInputWrap}>
-// //                     <TextInput
-// //                       style={styles.measureInput}
-// //                       keyboardType="numeric"
-// //                       placeholder="0"
-// //                       placeholderTextColor="#64748B"
-// //                       value={data?.[activeGarment]?.[field] || ""}
-// //                       onChangeText={(v) => updateValue(field, v)}
-// //                     />
-// //                     <Text style={styles.unit}>in</Text>
-// //                   </View>
-// //                 </View>
-// //               ))}
-// //             </View>
-// //           )
-// //         )}
-// //       </ScrollView>
-
-// //       {/* SAVE */}
-// //       <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-// //         <Text style={styles.saveText}>Save Measurements</Text>
-// //       </TouchableOpacity>
-
-// //       {/* GARMENT MODAL */}
-// //       <Modal transparent visible={pickerOpen} animationType="slide">
-// //         <View style={styles.modalBg}>
-// //           <View style={styles.modalCard}>
-// //             <Text style={styles.modalTitle}>Select Garment</Text>
-// //             {GARMENTS.map((g) => (
-// //               <TouchableOpacity
-// //                 key={g}
-// //                 style={styles.modalItem}
-// //                 onPress={() => {
-// //                   setActiveGarment(g);
-// //                   setPickerOpen(false);
-// //                 }}
-// //               >
-// //                 <Text style={styles.modalText}>{g}</Text>
-// //               </TouchableOpacity>
-// //             ))}
-// //           </View>
-// //         </View>
-// //       </Modal>
-
-// //       {/* 🔔 SLIDING TOAST (OVERLAY, NOT UI CHANGE) */}
-// //       {toastMsg !== "" && (
-// //         <Animated.View
-// //           style={{
-// //             position: "absolute",
-// //             top: 50,
-// //             right: 20,
-// //             backgroundColor: "#111827",
-// //             paddingVertical: 12,
-// //             paddingHorizontal: 18,
-// //             borderRadius: 20,
-// //             transform: [{ translateX: toastAnim }],
-// //           }}
-// //         >
-// //           <Text style={{ color: "#FFFFFF", fontWeight: "600" }}>
-// //             {toastMsg}
-// //           </Text>
-// //         </Animated.View>
-// //       )}
-// //     </SafeAreaView>
-// //   );
-// // }
-
-// // /* ---------------- STYLES ---------------- */
-
-// // const styles = StyleSheet.create({
-// //   safe: { flex: 1, backgroundColor: "#0B1121" },
-
-// //   header: {
-// //     flexDirection: "row",
-// //     justifyContent: "space-between",
-// //     padding: 20,
-// //   },
-// //   headerTitle: {
-// //     color: "#FFFFFF",
-// //     fontSize: 18,
-// //     fontWeight: "700",
-// //   },
-
-// //   garmentPicker: {
-// //     marginHorizontal: 16,
-// //     marginBottom: 10,
-// //     padding: 14,
-// //     borderRadius: 16,
-// //     backgroundColor: "#151E32",
-// //     borderWidth: 1,
-// //     borderColor: "#1E293B",
-// //   },
-// //   smallLabel: { color: "#94A3B8", fontSize: 11 },
-// //   rowBetween: {
-// //     flexDirection: "row",
-// //     justifyContent: "space-between",
-// //     alignItems: "center",
-// //   },
-// //   valueText: { color: "#E2E8F0", fontSize: 16 },
-
-// //   fitRow: {
-// //     flexDirection: "row",
-// //     justifyContent: "space-around",
-// //     marginBottom: 10,
-// //   },
-// //   fitChip: {
-// //     paddingHorizontal: 18,
-// //     paddingVertical: 10,
-// //     borderRadius: 20,
-// //     backgroundColor: "#1E293B",
-// //   },
-// //   fitChipActive: {
-// //     backgroundColor: "#2563EB",
-// //   },
-// //   fitText: { color: "#CBD5E1", fontWeight: "600" },
-// //   fitTextActive: { color: "#FFFFFF" },
-
-// //   form: { padding: 16, paddingBottom: 120 },
-
-// //   card: {
-// //     backgroundColor: "#151E32",
-// //     borderRadius: 18,
-// //     padding: 16,
-// //     marginBottom: 16,
-// //     borderWidth: 1,
-// //     borderColor: "#1E293B",
-// //   },
-// //   cardTitle: {
-// //     color: "#E2E8F0",
-// //     fontSize: 15,
-// //     fontWeight: "700",
-// //   },
-// //   divider: {
-// //     height: 1,
-// //     backgroundColor: "#1E293B",
-// //     marginVertical: 10,
-// //   },
-
-// //   measureRow: {
-// //     flexDirection: "row",
-// //     alignItems: "center",
-// //     marginBottom: 12,
-// //   },
-// //   measureLabel: {
-// //     flex: 1,
-// //     color: "#CBD5E1",
-// //     fontSize: 14,
-// //     paddingRight: 8,
-// //   },
-// //   measureInputWrap: {
-// //     flexDirection: "row",
-// //     alignItems: "center",
-// //     backgroundColor: "#0F172A",
-// //     borderRadius: 12,
-// //     borderWidth: 1,
-// //     borderColor: "#1E293B",
-// //     paddingHorizontal: 10,
-// //     width: 120,
-// //     height: 42,
-// //   },
-// //   measureInput: {
-// //     flex: 1,
-// //     color: "#FFFFFF",
-// //     fontSize: 15,
-// //     textAlign: "center",
-// //   },
-// //   unit: {
-// //     color: "#94A3B8",
-// //     fontSize: 12,
-// //     marginLeft: 4,
-// //   },
-
-// //   saveBtn: {
-// //     position: "absolute",
-// //     bottom: 20,
-// //     left: 20,
-// //     right: 20,
-// //     backgroundColor: "#2563EB",
-// //     paddingVertical: 16,
-// //     borderRadius: 16,
-// //     alignItems: "center",
-// //   },
-// //   saveText: {
-// //     color: "#FFFFFF",
-// //     fontSize: 16,
-// //     fontWeight: "700",
-// //   },
-
-// //   modalBg: {
-// //     flex: 1,
-// //     backgroundColor: "rgba(0,0,0,0.6)",
-// //     justifyContent: "flex-end",
-// //   },
-// //   modalCard: {
-// //     backgroundColor: "#0F172A",
-// //     padding: 20,
-// //     borderTopLeftRadius: 20,
-// //     borderTopRightRadius: 20,
-// //   },
-// //   modalTitle: {
-// //     color: "#FFFFFF",
-// //     fontSize: 16,
-// //     fontWeight: "700",
-// //     marginBottom: 10,
-// //   },
-// //   modalItem: {
-// //     paddingVertical: 14,
-// //     borderBottomWidth: 1,
-// //     borderBottomColor: "#1E293B",
-// //   },
-// //   modalText: {
-// //     color: "#CBD5E1",
-// //     fontSize: 15,
-// //   },
-// // });
-
-// import React, { useState, useRef, useEffect } from "react";
-// import { db } from "../firebaseConfig";
-
-// import {
-//   View,
-//   Text,
-//   StyleSheet,
-//   TouchableOpacity,
-//   ScrollView,
-//   TextInput,
-//   Modal,
-//   Alert,
-//   Animated,
-//   Dimensions,
-//   Vibration,
-// } from "react-native";
-// import { SafeAreaView } from "react-native-safe-area-context";
-// import { Ionicons } from "@expo/vector-icons";
-// import { addDoc, collection, serverTimestamp, query, where, getDocs, orderBy, limit } from "firebase/firestore";
-
-// const { width } = Dimensions.get("window");
-
-// /* ---------------- DATA ---------------- */
-
-// const GARMENTS = [
-//   { name: "Shirt", icon: "shirt-outline", color: "#3B82F6" },
-//   { name: "Pant", icon: "fitness-outline", color: "#8B5CF6" },
-//   { name: "Kurta", icon: "body-outline", color: "#EC4899" },
-//   { name: "Safari", icon: "briefcase-outline", color: "#F59E0B" },
-//   { name: "Coti", icon: "layers-outline", color: "#10B981" },
-//   { name: "Blazer", icon: "diamond-outline", color: "#EF4444" },
-//   { name: "Suit", icon: "ribbon-outline", color: "#6366F1" },
-// ];
-
-// const FIT_PRESETS = {
-//   Slim: { offset: -0.5, icon: "remove-circle-outline", color: "#EF4444" },
-//   Regular: { offset: 0, icon: "checkmark-circle-outline", color: "#10B981" },
-//   Loose: { offset: 0.5, icon: "add-circle-outline", color: "#3B82F6" },
-// };
-
-// const MEASUREMENTS = {
-//   Shirt: {
-//     "Body Size": ["Chest", "Stomach (Pet)", "Seat (Hip)", "Shoulder", "Back"],
-//     Sleeves: ["Sleeve Length", "Sleeve Round", "Sleeve End"],
-//     Neck: ["Collar", "Front Neck", "Back Neck"],
-//     Length: ["Shirt Length"],
-//   },
-//   Pant: {
-//     "Upper Part": ["Waist", "Seat (Hip)"],
-//     Legs: ["Thigh", "Knee", "Calf", "Bottom"],
-//     Length: ["Full Length", "Inside Length", "Seat Length"],
-//   },
-//   Kurta: {
-//     "Body Size": ["Chest", "Stomach (Pet)", "Seat (Hip)", "Shoulder"],
-//     Sleeves: ["Sleeve Length", "Sleeve End"],
-//     Length: ["Kurta Length"],
-//   },
-//   Safari: {
-//     "Body Size": ["Chest", "Stomach (Pet)", "Seat (Hip)", "Shoulder"],
-//     Sleeves: ["Sleeve Length", "Armhole"],
-//     Length: ["Safari Length"],
-//   },
-//   Coti: {
-//     "Body Size": ["Chest", "Stomach (Pet)", "Seat (Hip)", "Shoulder"],
-//     Length: ["Coti Length"],
-//   },
-//   Blazer: {
-//     "Body Size": ["Chest", "Stomach (Pet)", "Seat (Hip)", "Shoulder", "Back"],
-//     Sleeves: ["Sleeve Length", "Armhole"],
-//     Length: ["Blazer Length"],
-//   },
-//   Suit: {
-//     "Jacket Size": ["Chest", "Stomach (Pet)", "Seat (Hip)", "Shoulder", "Sleeve Length", "Back"],
-//     "Pant Size": ["Waist", "Seat (Hip)", "Thigh", "Bottom", "Full Length"],
-//   },
-// };
-
-// // Validation ranges (min-max in inches)
-// const VALIDATION_RANGES = {
-//   Chest: [30, 60],
-//   "Stomach (Pet)": [28, 58],
-//   "Seat (Hip)": [32, 62],
-//   Shoulder: [14, 24],
-//   Back: [15, 22],
-//   "Sleeve Length": [20, 36],
-//   "Sleeve Round": [12, 20],
-//   "Sleeve End": [8, 14],
-//   Collar: [13, 20],
-//   "Front Neck": [6, 12],
-//   "Back Neck": [6, 12],
-//   "Shirt Length": [26, 36],
-//   Waist: [26, 50],
-//   Thigh: [18, 32],
-//   Knee: [14, 22],
-//   Calf: [12, 20],
-//   Bottom: [10, 18],
-//   "Full Length": [36, 48],
-//   "Inside Length": [28, 40],
-//   "Seat Length": [10, 18],
-//   "Kurta Length": [36, 48],
-//   Armhole: [16, 24],
-//   "Safari Length": [28, 36],
-//   "Coti Length": [36, 48],
-//   "Blazer Length": [26, 34],
-// };
-
-// /* ---------------- COMPONENT ---------------- */
-
-// export default function AddMeasurementScreen({ navigation, route }) {
-//   const { customerId } = route?.params || {};
-
-//   const [activeGarment, setActiveGarment] = useState("Shirt");
-//   const [data, setData] = useState({});
-//   const [pickerOpen, setPickerOpen] = useState(false);
-//   const [fitType, setFitType] = useState("Regular");
-//   const [notes, setNotes] = useState("");
-//   const [focusedField, setFocusedField] = useState(null);
-//   const [previousMeasurements, setPreviousMeasurements] = useState(null);
-//   const [showPreviousModal, setShowPreviousModal] = useState(false);
-
-//   // Animations
-//   const [toastMsg, setToastMsg] = useState("");
-//   const toastAnim = useRef(new Animated.Value(300)).current;
-//   const garmentAnim = useRef(new Animated.Value(0)).current;
-//   const progressAnim = useRef(new Animated.Value(0)).current;
-
-//   // Load previous measurements
-//   useEffect(() => {
-//     loadPreviousMeasurements();
-//   }, [customerId, activeGarment]);
-
-//   // Update progress animation
-//   useEffect(() => {
-//     const progress = calculateProgress();
-//     Animated.timing(progressAnim, {
-//       toValue: progress,
-//       duration: 300,
-//       useNativeDriver: false,
-//     }).start();
-//   }, [data, activeGarment]);
-
-//   const loadPreviousMeasurements = async () => {
-//     if (!customerId) return;
-    
-//     try {
-//       const q = query(
-//         collection(db, "measurements"),
-//         where("customerId", "==", customerId),
-//         where("garment", "==", activeGarment),
-//         orderBy("createdAt", "desc"),
-//         limit(1)
-//       );
-      
-//       const snapshot = await getDocs(q);
-//       if (!snapshot.empty) {
-//         setPreviousMeasurements(snapshot.docs[0].data());
-//       } else {
-//         setPreviousMeasurements(null);
-//       }
-//     } catch (error) {
-//       console.log("No previous measurements found");
-//     }
-//   };
-
-//   const calculateProgress = () => {
-//     const fields = Object.values(MEASUREMENTS[activeGarment]).flat();
-//     const filled = fields.filter(
-//       (f) => data?.[activeGarment]?.[f] && data[activeGarment][f].toString().trim() !== ""
-//     ).length;
-//     return (filled / fields.length) * 100;
-//   };
-
-//   const showToast = (message, isError = false) => {
-//     Vibration.vibrate(50);
-//     setToastMsg({ text: message, isError });
-
-//     Animated.sequence([
-//       Animated.timing(toastAnim, {
-//         toValue: 0,
-//         duration: 300,
-//         useNativeDriver: true,
-//       }),
-//       Animated.delay(2000),
-//       Animated.timing(toastAnim, {
-//         toValue: 300,
-//         duration: 300,
-//         useNativeDriver: true,
-//       }),
-//     ]).start(() => setToastMsg(""));
-//   };
-
-//   const updateValue = (field, value) => {
-//     // Validate input
-//     if (value && !/^\d*\.?\d*$/.test(value)) return;
-
-//     setData((prev) => ({
-//       ...prev,
-//       [activeGarment]: {
-//         ...(prev[activeGarment] || {}),
-//         [field]: value,
-//       },
-//     }));
-
-//     // Validate range
-//     if (value && VALIDATION_RANGES[field]) {
-//       const numValue = parseFloat(value);
-//       const [min, max] = VALIDATION_RANGES[field];
-//       if (numValue < min || numValue > max) {
-//         showToast(`${field}: Expected ${min}-${max} inches`, true);
-//       }
-//     }
-//   };
-
-//   const incrementValue = (field, amount) => {
-//     Vibration.vibrate(30);
-//     const current = parseFloat(data?.[activeGarment]?.[field] || 0);
-//     const newValue = Math.max(0, current + amount).toFixed(1);
-//     updateValue(field, newValue);
-//   };
-
-//   const applyFitPreset = (type) => {
-//     Vibration.vibrate(50);
-//     const offset = FIT_PRESETS[type].offset;
-//     const updated = {};
-
-//     Object.values(MEASUREMENTS[activeGarment])
-//       .flat()
-//       .forEach((f) => {
-//         const base = parseFloat(data?.[activeGarment]?.[f] || 0);
-//         if (!isNaN(base) && base > 0) {
-//           updated[f] = (base + offset).toFixed(1);
-//         }
-//       });
-
-//     setData((prev) => ({
-//       ...prev,
-//       [activeGarment]: {
-//         ...(prev[activeGarment] || {}),
-//         ...updated,
-//       },
-//     }));
-
-//     setFitType(type);
-//     showToast(`${type} fit applied`);
-//   };
-
-//   const loadPreviousData = () => {
-//     if (previousMeasurements) {
-//       setData((prev) => ({
-//         ...prev,
-//         [activeGarment]: previousMeasurements.values,
-//       }));
-//       setFitType(previousMeasurements.fitType || "Regular");
-//       setShowPreviousModal(false);
-//       showToast("Previous measurements loaded");
-//     }
-//   };
-
-//   const changeGarment = (garmentName) => {
-//     Animated.sequence([
-//       Animated.timing(garmentAnim, {
-//         toValue: 1,
-//         duration: 150,
-//         useNativeDriver: true,
-//       }),
-//       Animated.timing(garmentAnim, {
-//         toValue: 0,
-//         duration: 150,
-//         useNativeDriver: true,
-//       }),
-//     ]).start();
-
-//     setActiveGarment(garmentName);
-//     setPickerOpen(false);
-//     Vibration.vibrate(40);
-//   };
-
-//   const allMeasurementsFilled = () => {
-//     const fields = Object.values(MEASUREMENTS[activeGarment]).flat();
-//     return fields.every(
-//       (f) =>
-//         data?.[activeGarment]?.[f] &&
-//         data[activeGarment][f].toString().trim() !== ""
-//     );
-//   };
-
-//   const handleSave = async () => {
-//     if (!allMeasurementsFilled()) {
-//       Alert.alert("Incomplete", "Please fill all measurement fields");
-//       return;
-//     }
-
-//     Vibration.vibrate([50, 100, 50]);
-
-//     try {
-//       await addDoc(collection(db, "measurements"), {
-//         customerId,
-//         garment: activeGarment,
-//         fitType,
-//         values: data[activeGarment],
-//         notes: notes || "",
-//         createdAt: serverTimestamp(),
-//       });
-
-//       showToast("✓ Measurements saved successfully");
-
-//       setTimeout(() => {
-//         navigation.goBack();
-//       }, 1000);
-//     } catch (error) {
-//       showToast("Failed to save measurements", true);
-//     }
-//   };
-
-//   const currentGarment = GARMENTS.find((g) => g.name === activeGarment);
-//   const progress = calculateProgress();
-
-//   return (
-//     <SafeAreaView style={styles.safe}>
-//       {/* HEADER */}
-//       <View style={styles.header}>
-//         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-//           <Ionicons name="arrow-back" size={22} color="#E5E7EB" />
-//         </TouchableOpacity>
-//         <Text style={styles.headerTitle}>Measurements</Text>
-//         <TouchableOpacity
-//           onPress={() => previousMeasurements && setShowPreviousModal(true)}
-//           style={styles.historyBtn}
-//         >
-//           <Ionicons
-//             name="time-outline"
-//             size={22}
-//             color={previousMeasurements ? "#3B82F6" : "#475569"}
-//           />
-//         </TouchableOpacity>
-//       </View>
-
-//       {/* PROGRESS BAR */}
-//       <View style={styles.progressContainer}>
-//         <View style={styles.progressBar}>
-//           <Animated.View
-//             style={[
-//               styles.progressFill,
-//               {
-//                 width: progressAnim.interpolate({
-//                   inputRange: [0, 100],
-//                   outputRange: ["0%", "100%"],
-//                 }),
-//                 backgroundColor:
-//                   progress === 100 ? "#10B981" : progress > 50 ? "#3B82F6" : "#F59E0B",
-//               },
-//             ]}
-//           />
-//         </View>
-//         <Text style={styles.progressText}>
-//           {Math.round(progress)}% Complete • {Object.values(MEASUREMENTS[activeGarment]).flat().length} fields
-//         </Text>
-//       </View>
-
-//       {/* GARMENT PICKER */}
-//       <TouchableOpacity
-//         style={[styles.garmentPicker, { borderColor: currentGarment?.color }]}
-//         onPress={() => setPickerOpen(true)}
-//         activeOpacity={0.7}
-//       >
-//         <View style={styles.garmentPickerContent}>
-//           <View style={[styles.iconCircle, { backgroundColor: currentGarment?.color + "20" }]}>
-//             <Ionicons name={currentGarment?.icon} size={24} color={currentGarment?.color} />
-//           </View>
-//           <View style={styles.garmentInfo}>
-//             <Text style={styles.smallLabel}>Selected Garment</Text>
-//             <Text style={styles.valueText}>{activeGarment}</Text>
-//           </View>
-//           <Ionicons name="chevron-down" size={20} color="#94A3B8" />
-//         </View>
-//       </TouchableOpacity>
-
-//       {/* FIT PRESET */}
-//       <View style={styles.fitRow}>
-//         {Object.entries(FIT_PRESETS).map(([type, config]) => (
-//           <TouchableOpacity
-//             key={type}
-//             style={[
-//               styles.fitChip,
-//               fitType === type && [styles.fitChipActive, { backgroundColor: config.color }],
-//             ]}
-//             onPress={() => applyFitPreset(type)}
-//             activeOpacity={0.7}
-//           >
-//             <Ionicons
-//               name={config.icon}
-//               size={18}
-//               color={fitType === type ? "#FFFFFF" : "#94A3B8"}
-//             />
-//             <Text style={[styles.fitText, fitType === type && styles.fitTextActive]}>
-//               {type}
-//             </Text>
-//           </TouchableOpacity>
-//         ))}
-//       </View>
-
-//       {/* FORM */}
-//       <Animated.View
-//         style={[
-//           styles.formContainer,
-//           {
-//             opacity: garmentAnim.interpolate({
-//               inputRange: [0, 1],
-//               outputRange: [1, 0.3],
-//             }),
-//           },
-//         ]}
-//       >
-//         <ScrollView
-//           contentContainerStyle={styles.form}
-//           showsVerticalScrollIndicator={false}
-//         >
-//           {Object.entries(MEASUREMENTS[activeGarment]).map(([section, fields]) => (
-//             <View key={section} style={styles.card}>
-//               <View style={styles.cardHeader}>
-//                 <Text style={styles.cardTitle}>{section}</Text>
-//                 <View style={styles.badge}>
-//                   <Text style={styles.badgeText}>
-//                     {fields.filter((f) => data?.[activeGarment]?.[f]).length}/{fields.length}
-//                   </Text>
-//                 </View>
-//               </View>
-//               <View style={styles.divider} />
-
-//               {fields.map((field, idx) => {
-//                 const value = data?.[activeGarment]?.[field] || "";
-//                 const isFilled = value && value.toString().trim() !== "";
-//                 const isFocused = focusedField === field;
-
-//                 return (
-//                   <View
-//                     key={field}
-//                     style={[
-//                       styles.measureRow,
-//                       isFocused && styles.measureRowFocused,
-//                     ]}
-//                   >
-//                     <View style={styles.measureLabelContainer}>
-//                       <View
-//                         style={[
-//                           styles.measureDot,
-//                           isFilled && styles.measureDotFilled,
-//                         ]}
-//                       />
-//                       <Text style={styles.measureLabel}>{field}</Text>
-//                     </View>
-
-//                     <View style={styles.measureControls}>
-//                       <TouchableOpacity
-//                         style={styles.incrementBtn}
-//                         onPress={() => incrementValue(field, -0.5)}
-//                         activeOpacity={0.7}
-//                       >
-//                         <Ionicons name="remove" size={16} color="#64748B" />
-//                       </TouchableOpacity>
-
-//                       <View
-//                         style={[
-//                           styles.measureInputWrap,
-//                           isFocused && styles.measureInputWrapFocused,
-//                         ]}
-//                       >
-//                         <TextInput
-//                           style={styles.measureInput}
-//                           keyboardType="decimal-pad"
-//                           placeholder="0.0"
-//                           placeholderTextColor="#475569"
-//                           value={value}
-//                           onChangeText={(v) => updateValue(field, v)}
-//                           onFocus={() => setFocusedField(field)}
-//                           onBlur={() => setFocusedField(null)}
-//                         />
-//                         <Text style={styles.unit}>in</Text>
-//                       </View>
-
-//                       <TouchableOpacity
-//                         style={styles.incrementBtn}
-//                         onPress={() => incrementValue(field, 0.5)}
-//                         activeOpacity={0.7}
-//                       >
-//                         <Ionicons name="add" size={16} color="#64748B" />
-//                       </TouchableOpacity>
-//                     </View>
-//                   </View>
-//                 );
-//               })}
-//             </View>
-//           ))}
-
-//           {/* NOTES SECTION */}
-//           <View style={styles.card}>
-//             <Text style={styles.cardTitle}>Additional Notes</Text>
-//             <View style={styles.divider} />
-//             <TextInput
-//               style={styles.notesInput}
-//               placeholder="Add any special instructions or remarks..."
-//               placeholderTextColor="#64748B"
-//               multiline
-//               numberOfLines={3}
-//               value={notes}
-//               onChangeText={setNotes}
-//               textAlignVertical="top"
-//             />
-//           </View>
-
-//           <View style={{ height: 100 }} />
-//         </ScrollView>
-//       </Animated.View>
-
-//       {/* SAVE BUTTON */}
-//       <View style={styles.saveContainer}>
-//         <TouchableOpacity
-//           style={[
-//             styles.saveBtn,
-//             progress === 100 && styles.saveBtnReady,
-//           ]}
-//           onPress={handleSave}
-//           activeOpacity={0.8}
-//         >
-//           <Ionicons
-//             name={progress === 100 ? "checkmark-circle" : "save-outline"}
-//             size={22}
-//             color="#FFFFFF"
-//           />
-//           <Text style={styles.saveText}>
-//             {progress === 100 ? "Save & Continue" : "Save Measurements"}
-//           </Text>
-//         </TouchableOpacity>
-//       </View>
-
-//       {/* GARMENT MODAL */}
-//       <Modal
-//         transparent
-//         visible={pickerOpen}
-//         animationType="slide"
-//         onRequestClose={() => setPickerOpen(false)}
-//       >
-//         <TouchableOpacity
-//           style={styles.modalBg}
-//           activeOpacity={1}
-//           onPress={() => setPickerOpen(false)}
-//         >
-//           <View style={styles.modalCard}>
-//             <View style={styles.modalHandle} />
-//             <Text style={styles.modalTitle}>Select Garment Type</Text>
-
-//             <ScrollView showsVerticalScrollIndicator={false}>
-//               {GARMENTS.map((garment) => (
-//                 <TouchableOpacity
-//                   key={garment.name}
-//                   style={[
-//                     styles.modalItem,
-//                     activeGarment === garment.name && styles.modalItemActive,
-//                   ]}
-//                   onPress={() => changeGarment(garment.name)}
-//                   activeOpacity={0.7}
-//                 >
-//                   <View style={[styles.modalIconCircle, { backgroundColor: garment.color + "20" }]}>
-//                     <Ionicons name={garment.icon} size={22} color={garment.color} />
-//                   </View>
-//                   <Text
-//                     style={[
-//                       styles.modalText,
-//                       activeGarment === garment.name && styles.modalTextActive,
-//                     ]}
-//                   >
-//                     {garment.name}
-//                   </Text>
-//                   {activeGarment === garment.name && (
-//                     <Ionicons name="checkmark-circle" size={22} color={garment.color} />
-//                   )}
-//                 </TouchableOpacity>
-//               ))}
-//             </ScrollView>
-//           </View>
-//         </TouchableOpacity>
-//       </Modal>
-
-//       {/* PREVIOUS MEASUREMENTS MODAL */}
-//       <Modal
-//         transparent
-//         visible={showPreviousModal}
-//         animationType="fade"
-//         onRequestClose={() => setShowPreviousModal(false)}
-//       >
-//         <TouchableOpacity
-//           style={styles.modalBg}
-//           activeOpacity={1}
-//           onPress={() => setShowPreviousModal(false)}
-//         >
-//           <View style={styles.previousModal}>
-//             <Ionicons name="time-outline" size={32} color="#3B82F6" />
-//             <Text style={styles.previousTitle}>Load Previous Measurements?</Text>
-//             <Text style={styles.previousSubtitle}>
-//               Found saved {activeGarment} measurements for this customer
-//             </Text>
-
-//             <View style={styles.previousButtons}>
-//               <TouchableOpacity
-//                 style={styles.previousBtnCancel}
-//                 onPress={() => setShowPreviousModal(false)}
-//               >
-//                 <Text style={styles.previousBtnTextCancel}>Cancel</Text>
-//               </TouchableOpacity>
-//               <TouchableOpacity
-//                 style={styles.previousBtnLoad}
-//                 onPress={loadPreviousData}
-//               >
-//                 <Text style={styles.previousBtnTextLoad}>Load Data</Text>
-//               </TouchableOpacity>
-//             </View>
-//           </View>
-//         </TouchableOpacity>
-//       </Modal>
-
-//       {/* TOAST */}
-//       {toastMsg && (
-//         <Animated.View
-//           style={[
-//             styles.toast,
-//             {
-//               backgroundColor: toastMsg.isError ? "#DC2626" : "#059669",
-//               transform: [{ translateX: toastAnim }],
-//             },
-//           ]}
-//         >
-//           <Ionicons
-//             name={toastMsg.isError ? "alert-circle" : "checkmark-circle"}
-//             size={20}
-//             color="#FFFFFF"
-//           />
-//           <Text style={styles.toastText}>{toastMsg.text}</Text>
-//         </Animated.View>
-//       )}
-//     </SafeAreaView>
-//   );
-// }
-
-// /* ---------------- STYLES ---------------- */
-
-// const styles = StyleSheet.create({
-//   safe: { flex: 1, backgroundColor: "#0B0F1A" },
-
-//   header: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     paddingHorizontal: 20,
-//     paddingVertical: 16,
-//   },
-//   backBtn: {
-//     width: 40,
-//     height: 40,
-//     borderRadius: 12,
-//     backgroundColor: "#1E293B",
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   historyBtn: {
-//     width: 40,
-//     height: 40,
-//     borderRadius: 12,
-//     backgroundColor: "#1E293B",
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   headerTitle: {
-//     color: "#FFFFFF",
-//     fontSize: 20,
-//     fontWeight: "700",
-//     letterSpacing: 0.3,
-//   },
-
-//   progressContainer: {
-//     paddingHorizontal: 20,
-//     marginBottom: 16,
-//   },
-//   progressBar: {
-//     height: 6,
-//     backgroundColor: "#1E293B",
-//     borderRadius: 10,
-//     overflow: "hidden",
-//     marginBottom: 8,
-//   },
-//   progressFill: {
-//     height: "100%",
-//     borderRadius: 10,
-//   },
-//   progressText: {
-//     color: "#94A3B8",
-//     fontSize: 12,
-//     fontWeight: "600",
-//   },
-
-//   garmentPicker: {
-//     marginHorizontal: 16,
-//     marginBottom: 12,
-//     padding: 16,
-//     borderRadius: 18,
-//     backgroundColor: "#151E32",
-//     borderWidth: 2,
-//   },
-//   garmentPickerContent: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//   },
-//   iconCircle: {
-//     width: 48,
-//     height: 48,
-//     borderRadius: 24,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     marginRight: 12,
-//   },
-//   garmentInfo: {
-//     flex: 1,
-//   },
-//   smallLabel: {
-//     color: "#64748B",
-//     fontSize: 11,
-//     fontWeight: "600",
-//     marginBottom: 2,
-//     textTransform: "uppercase",
-//     letterSpacing: 0.5,
-//   },
-//   valueText: {
-//     color: "#E2E8F0",
-//     fontSize: 18,
-//     fontWeight: "700",
-//   },
-
-//   fitRow: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     paddingHorizontal: 16,
-//     marginBottom: 16,
-//     gap: 8,
-//   },
-//   fitChip: {
-//     flex: 1,
-//     flexDirection: "row",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     paddingVertical: 12,
-//     borderRadius: 14,
-//     backgroundColor: "#1E293B",
-//     gap: 6,
-//   },
-//   fitChipActive: {
-//     backgroundColor: "#2563EB",
-//     transform: [{ scale: 1.02 }],
-//   },
-//   fitText: {
-//     color: "#94A3B8",
-//     fontWeight: "700",
-//     fontSize: 13,
-//   },
-//   fitTextActive: {
-//     color: "#FFFFFF",
-//   },
-
-//   formContainer: {
-//     flex: 1,
-//   },
-//   form: {
-//     padding: 16,
-//     paddingBottom: 120,
-//   },
-
-//   card: {
-//     backgroundColor: "#151E32",
-//     borderRadius: 20,
-//     padding: 18,
-//     marginBottom: 16,
-//     borderWidth: 1,
-//     borderColor: "#1E293B",
-//   },
-//   cardHeader: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//   },
-//   cardTitle: {
-//     color: "#E2E8F0",
-//     fontSize: 16,
-//     fontWeight: "700",
-//   },
-//   badge: {
-//     backgroundColor: "#1E293B",
-//     paddingHorizontal: 10,
-//     paddingVertical: 4,
-//     borderRadius: 12,
-//   },
-//   badgeText: {
-//     color: "#3B82F6",
-//     fontSize: 12,
-//     fontWeight: "700",
-//   },
-//   divider: {
-//     height: 1,
-//     backgroundColor: "#1E293B",
-//     marginVertical: 12,
-//   },
-
-//   measureRow: {
-//     marginBottom: 14,
-//     padding: 12,
-//     borderRadius: 12,
-//     backgroundColor: "#0F1A2A",
-//   },
-//   measureRowFocused: {
-//     backgroundColor: "#1E293B",
-//     borderWidth: 1,
-//     borderColor: "#3B82F6",
-//   },
-//   measureLabelContainer: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     marginBottom: 10,
-//   },
-//   measureDot: {
-//     width: 8,
-//     height: 8,
-//     borderRadius: 4,
-//     backgroundColor: "#334155",
-//     marginRight: 10,
-//   },
-//   measureDotFilled: {
-//     backgroundColor: "#10B981",
-//   },
-//   measureLabel: {
-//     flex: 1,
-//     color: "#CBD5E1",
-//     fontSize: 14,
-//     fontWeight: "600",
-//   },
-
-//   measureControls: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     justifyContent: "space-between",
-//   },
-//   incrementBtn: {
-//     width: 36,
-//     height: 36,
-//     borderRadius: 10,
-//     backgroundColor: "#1E293B",
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   measureInputWrap: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     backgroundColor: "#0B0F1A",
-//     borderRadius: 12,
-//     borderWidth: 1,
-//     borderColor: "#1E293B",
-//     paddingHorizontal: 12,
-//     height: 44,
-//     flex: 1,
-//     marginHorizontal: 8,
-//   },
-//   measureInputWrapFocused: {
-//     borderColor: "#3B82F6",
-//     backgroundColor: "#0F172A",
-//   },
-//   measureInput: {
-//     flex: 1,
-//     color: "#FFFFFF",
-//     fontSize: 16,
-//     fontWeight: "700",
-//     textAlign: "center",
-//   },
-//   unit: {
-//     color: "#64748B",
-//     fontSize: 12,
-//     fontWeight: "600",
-//     marginLeft: 4,
-//   },
-
-//   notesInput: {
-//     color: "#CBD5E1",
-//     fontSize: 14,
-//     minHeight: 80,
-//     padding: 12,
-//     backgroundColor: "#0F1A2A",
-//     borderRadius: 12,
-//   },
-
-//   saveContainer: {
-//     position: "absolute",
-//     bottom: 0,
-//     left: 0,
-//     right: 0,
-//     padding: 20,
-//     paddingBottom: 30,
-//     backgroundColor: "#0B0F1A",
-//     borderTopWidth: 1,
-//     borderTopColor: "#1E293B",
-//   },
-//   saveBtn: {
-//     flexDirection: "row",
-//     backgroundColor: "#2563EB",
-//     paddingVertical: 18,
-//     borderRadius: 16,
-//     alignItems: "center",
-//     justifyContent: "center",
-//     gap: 10,
-//   },
-//   saveBtnReady: {
-//     backgroundColor: "#10B981",
-//   },
-//   saveText: {
-//     color: "#FFFFFF",
-//     fontSize: 16,
-//     fontWeight: "700",
-//   },
-
-//   modalBg: {
-//     flex: 1,
-//     backgroundColor: "rgba(0,0,0,0.7)",
-//     justifyContent: "flex-end",
-//   },
-//   modalCard: {
-//     backgroundColor: "#0F172A",
-//     paddingTop: 10,
-//     paddingBottom: 30,
-//     paddingHorizontal: 20,
-//     borderTopLeftRadius: 30,
-//     borderTopRightRadius: 30,
-//     maxHeight: "70%",
-//   },
-//   modalHandle: {
-//     width: 40,
-//     height: 4,
-//     backgroundColor: "#334155",
-//     borderRadius: 2,
-//     alignSelf: "center",
-//     marginBottom: 20,
-//   },
-//   modalTitle: {
-//     color: "#FFFFFF",
-//     fontSize: 18,
-//     fontWeight: "700",
-//     marginBottom: 16,
-//   },
-//   modalItem: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     paddingVertical: 16,
-//     paddingHorizontal: 16,
-//     borderRadius: 14,
-//     marginBottom: 8,
-//     backgroundColor: "#1E293B",
-//   },
-//   modalItemActive: {
-//     backgroundColor: "#1E3A5F",
-//   },
-//   modalIconCircle: {
-//     width: 40,
-//     height: 40,
-//     borderRadius: 20,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     marginRight: 12,
-//   },
-//   modalText: {
-//     flex: 1,
-//     color: "#CBD5E1",
-//     fontSize: 15,
-//     fontWeight: "600",
-//   },
-//   modalTextActive: {
-//     color: "#FFFFFF",
-//     fontWeight: "700",
-//   },
-
-//   previousModal: {
-//     backgroundColor: "#0F172A",
-//     marginHorizontal: 30,
-//     padding: 24,
-//     borderRadius: 24,
-//     alignItems: "center",
-//     borderWidth: 1,
-//     borderColor: "#1E293B",
-//   },
-//   previousTitle: {
-//     color: "#FFFFFF",
-//     fontSize: 18,
-//     fontWeight: "700",
-//     marginTop: 16,
-//     marginBottom: 8,
-//   },
-//   previousSubtitle: {
-//     color: "#94A3B8",
-//     fontSize: 14,
-//     textAlign: "center",
-//     marginBottom: 24,
-//   },
-//   previousButtons: {
-//     flexDirection: "row",
-//     gap: 12,
-//     width: "100%",
-//   },
-//   previousBtnCancel: {
-//     flex: 1,
-//     paddingVertical: 14,
-//     borderRadius: 14,
-//     backgroundColor: "#1E293B",
-//     alignItems: "center",
-//   },
-//   previousBtnLoad: {
-//     flex: 1,
-//     paddingVertical: 14,
-//     borderRadius: 14,
-//     backgroundColor: "#3B82F6",
-//     alignItems: "center",
-//   },
-//   previousBtnTextCancel: {
-//     color: "#CBD5E1",
-//     fontSize: 15,
-//     fontWeight: "700",
-//   },
-//   previousBtnTextLoad: {
-//     color: "#FFFFFF",
-//     fontSize: 15,
-//     fontWeight: "700",
-//   },
-
-//   toast: {
-//     position: "absolute",
-//     top: 60,
-//     right: 20,
-//     flexDirection: "row",
-//     alignItems: "center",
-//     paddingVertical: 14,
-//     paddingHorizontal: 18,
-//     borderRadius: 16,
-//     gap: 10,
-//     shadowColor: "#000",
-//     shadowOffset: { width: 0, height: 4 },
-//     shadowOpacity: 0.3,
-//     shadowRadius: 8,
-//     elevation: 8,
-//   },
-//   toastText: {
-//     color: "#FFFFFF",
-//     fontWeight: "700",
-//     fontSize: 14,
-//   },
-// });
-
 import React, { useState, useRef, useEffect } from "react";
 import { db } from "../firebaseConfig";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  TextInput,
-  Modal,
-  Alert,
-  Animated,
-  Dimensions,
-  Vibration,
+  View, Text, StyleSheet, TouchableOpacity, ScrollView,
+  TextInput, Modal, Alert, Animated, Dimensions,
+  Vibration, StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { addDoc, collection, serverTimestamp, query, where, getDocs, orderBy, limit } from "firebase/firestore";
+import {
+  addDoc, collection, serverTimestamp,
+  query, where, getDocs, orderBy, limit,
+  updateDoc, doc,
+} from "firebase/firestore";
 import { useLanguage } from "../context/LanguageContext";
 import { LanguageToggle } from "../context/LanguageToggle";
 
 const { width } = Dimensions.get("window");
 
-/* ---------------- DATA ---------------- */
+const C = {
+  bg: "#F2F3F7", card: "#FFFFFF", primary: "#3B82F6",
+  green: "#A3E635", text: "#1C1C1E", sub: "#6B7280",
+  border: "#E5E7EB", inputBg: "#F8F9FB", danger: "#EF4444",
+  success: "#22C55E", amber: "#F59E0B",
+};
 
 const GARMENTS = [
-  { name: "Shirt", icon: "shirt-outline", color: "#3B82F6" },
-  { name: "Pant", icon: "fitness-outline", color: "#8B5CF6" },
-  { name: "Kurta", icon: "body-outline", color: "#EC4899" },
-  { name: "Safari", icon: "briefcase-outline", color: "#F59E0B" },
-  { name: "Coti", icon: "layers-outline", color: "#10B981" },
-  { name: "Blazer", icon: "diamond-outline", color: "#EF4444" },
-  { name: "Suit", icon: "ribbon-outline", color: "#6366F1" },
+  { name:"Shirt",  icon:"shirt-outline",     color:"#3B82F6" },
+  { name:"Pant",   icon:"fitness-outline",   color:"#8B5CF6" },
+  { name:"Kurta",  icon:"body-outline",      color:"#EC4899" },
+  { name:"Safari", icon:"briefcase-outline", color:"#F59E0B" },
+  { name:"Coti",   icon:"layers-outline",    color:"#10B981" },
+  { name:"Blazer", icon:"diamond-outline",   color:"#EF4444" },
+  { name:"Suit",   icon:"ribbon-outline",    color:"#6366F1" },
 ];
 
 const FIT_PRESETS = {
-  Slim: { offset: -0.5, icon: "remove-circle-outline", color: "#EF4444" },
-  Regular: { offset: 0, icon: "checkmark-circle-outline", color: "#10B981" },
-  Loose: { offset: 0.5, icon: "add-circle-outline", color: "#3B82F6" },
+  Slim:    { offset:-0.5, icon:"remove-circle-outline",    color:"#EF4444" },
+  Regular: { offset:0,    icon:"checkmark-circle-outline", color:"#10B981" },
+  Loose:   { offset:0.5,  icon:"add-circle-outline",       color:"#3B82F6" },
 };
 
 const MEASUREMENTS = {
   Shirt: {
-    "Body Size": ["Chest", "Stomach (Pet)", "Seat (Hip)", "Shoulder", "Back"],
-    Sleeves: ["Sleeve Length", "Sleeve Round", "Sleeve End"],
-    Neck: ["Collar", "Front Neck", "Back Neck"],
-    Length: ["Shirt Length"],
+    "Body Size": ["Chest","Stomach (Pet)","Seat (Hip)","Shoulder","Back"],
+    Sleeves:     ["Sleeve Length","Sleeve Round","Sleeve End"],
+    Neck:        ["Collar","Front Neck","Back Neck"],
+    Length:      ["Shirt Length"],
   },
   Pant: {
-    "Upper Part": ["Waist", "Seat (Hip)"],
-    Legs: ["Thigh", "Knee", "Calf", "Bottom"],
-    Length: ["Full Length", "Inside Length", "Seat Length"],
+    "Upper Part": ["Waist","Seat (Hip)"],
+    Legs:         ["Thigh","Knee","Calf","Bottom"],
+    Length:       ["Full Length","Inside Length","Seat Length"],
   },
   Kurta: {
-    "Body Size": ["Chest", "Stomach (Pet)", "Seat (Hip)", "Shoulder"],
-    Sleeves: ["Sleeve Length", "Sleeve End"],
-    Length: ["Kurta Length"],
+    "Body Size": ["Chest","Stomach (Pet)","Seat (Hip)","Shoulder"],
+    Sleeves:     ["Sleeve Length","Sleeve End"],
+    Length:      ["Kurta Length"],
   },
   Safari: {
-    "Body Size": ["Chest", "Stomach (Pet)", "Seat (Hip)", "Shoulder"],
-    Sleeves: ["Sleeve Length", "Armhole"],
-    Length: ["Safari Length"],
+    "Body Size": ["Chest","Stomach (Pet)","Seat (Hip)","Shoulder"],
+    Sleeves:     ["Sleeve Length","Armhole"],
+    Length:      ["Safari Length"],
   },
   Coti: {
-    "Body Size": ["Chest", "Stomach (Pet)", "Seat (Hip)", "Shoulder"],
-    Length: ["Coti Length"],
+    "Body Size": ["Chest","Stomach (Pet)","Seat (Hip)","Shoulder"],
+    Length:      ["Coti Length"],
   },
   Blazer: {
-    "Body Size": ["Chest", "Stomach (Pet)", "Seat (Hip)", "Shoulder", "Back"],
-    Sleeves: ["Sleeve Length", "Armhole"],
-    Length: ["Blazer Length"],
+    "Body Size": ["Chest","Stomach (Pet)","Seat (Hip)","Shoulder","Back"],
+    Sleeves:     ["Sleeve Length","Armhole"],
+    Length:      ["Blazer Length"],
   },
   Suit: {
-    "Jacket Size": ["Chest", "Stomach (Pet)", "Seat (Hip)", "Shoulder", "Sleeve Length", "Back"],
-    "Pant Size": ["Waist", "Seat (Hip)", "Thigh", "Bottom", "Full Length"],
+    "Jacket Size": ["Chest","Stomach (Pet)","Seat (Hip)","Shoulder","Sleeve Length","Back"],
+    "Pant Size":   ["Waist","Seat (Hip)","Thigh","Bottom","Full Length"],
   },
 };
 
-// Validation ranges (min-max in inches)
 const VALIDATION_RANGES = {
-  Chest: [30, 60],
-  "Stomach (Pet)": [28, 58],
-  "Seat (Hip)": [32, 62],
-  Shoulder: [14, 24],
-  Back: [15, 22],
-  "Sleeve Length": [20, 36],
-  "Sleeve Round": [12, 20],
-  "Sleeve End": [8, 14],
-  Collar: [13, 20],
-  "Front Neck": [6, 12],
-  "Back Neck": [6, 12],
-  "Shirt Length": [26, 36],
-  Waist: [26, 50],
-  Thigh: [18, 32],
-  Knee: [14, 22],
-  Calf: [12, 20],
-  Bottom: [10, 18],
-  "Full Length": [36, 48],
-  "Inside Length": [28, 40],
-  "Seat Length": [10, 18],
-  "Kurta Length": [36, 48],
-  Armhole: [16, 24],
-  "Safari Length": [28, 36],
-  "Coti Length": [36, 48],
-  "Blazer Length": [26, 34],
+  Chest:[30,60],"Stomach (Pet)":[28,58],"Seat (Hip)":[32,62],
+  Shoulder:[14,24],Back:[15,22],"Sleeve Length":[20,36],
+  "Sleeve Round":[12,20],"Sleeve End":[8,14],Collar:[13,20],
+  "Front Neck":[6,12],"Back Neck":[6,12],"Shirt Length":[26,36],
+  Waist:[26,50],Thigh:[18,32],Knee:[14,22],Calf:[12,20],
+  Bottom:[10,18],"Full Length":[36,48],"Inside Length":[28,40],
+  "Seat Length":[10,18],"Kurta Length":[36,48],Armhole:[16,24],
+  "Safari Length":[28,36],"Coti Length":[36,48],"Blazer Length":[26,34],
 };
 
-/* ---------------- COMPONENT ---------------- */
+// BUG 9 FIX: robust updateDoc with retry
+const updateOrderWithRetry = async (orderId, data, retries = 3) => {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      await updateDoc(doc(db, "orders", orderId), data);
+      return true;
+    } catch (e) {
+      console.warn(`updateOrder attempt ${attempt}/${retries} failed:`, e.message);
+      if (attempt === retries) {
+        console.error("updateOrder permanently failed after retries:", e);
+        return false;
+      }
+      await new Promise((res) => setTimeout(res, 400 * attempt));
+    }
+  }
+  return false;
+};
 
 export default function AddMeasurementScreen({ navigation, route }) {
-  const { customerId } = route?.params || {};
+  const { customerId, orderId, orderRefId, customerName } = route?.params || {};
   const { t } = useLanguage();
 
-  const [activeGarment, setActiveGarment] = useState("Shirt");
-  const [data, setData] = useState({});
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const [fitType, setFitType] = useState("Regular");
-  const [notes, setNotes] = useState("");
-  const [focusedField, setFocusedField] = useState(null);
-  const [previousMeasurements, setPreviousMeasurements] = useState(null);
-  const [showPreviousModal, setShowPreviousModal] = useState(false);
+  const editMode        = route?.params?.editMode || false;
+  const measurementId   = route?.params?.measurementId;
+  const measurementData = route?.params?.measurementData;
 
-  // Animations
-  const [toastMsg, setToastMsg] = useState("");
-  const toastAnim = useRef(new Animated.Value(300)).current;
-  const garmentAnim = useRef(new Animated.Value(0)).current;
+  const [activeGarment,       setActiveGarment]       = useState("Shirt");
+  const [data,                setData]                = useState({});
+  const [pickerOpen,          setPickerOpen]          = useState(false);
+  const [fitType,             setFitType]             = useState("Regular");
+  const [notes,               setNotes]               = useState("");
+  const [focusedField,        setFocusedField]        = useState(null);
+  const [previousMeasurements,setPreviousMeasurements]= useState(null);
+  const [showPreviousModal,   setShowPreviousModal]   = useState(false);
+  const [toastMsg,            setToastMsg]            = useState("");
+
+  const toastAnim    = useRef(new Animated.Value(300)).current;
+  const garmentAnim  = useRef(new Animated.Value(0)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim     = useRef(new Animated.Value(0)).current;
 
-  // Load previous measurements
   useEffect(() => {
-    loadPreviousMeasurements();
-  }, [customerId, activeGarment]);
+    Animated.timing(fadeAnim, { toValue:1, duration:260, useNativeDriver:true }).start();
+  }, []);
 
-  // Update progress animation
   useEffect(() => {
-    const progress = calculateProgress();
+    if (editMode && measurementData) {
+      setActiveGarment(measurementData.garment);
+      setFitType(measurementData.fitType || "Regular");
+      setNotes(measurementData.notes || "");
+      if (measurementData.values) setData({ [measurementData.garment]: measurementData.values });
+    }
+  }, [editMode, measurementData]);
+
+  useEffect(() => {
+    if (!editMode) loadPreviousMeasurements();
+  }, [customerId, activeGarment, editMode]);
+
+  useEffect(() => {
     Animated.timing(progressAnim, {
-      toValue: progress,
-      duration: 300,
-      useNativeDriver: false,
+      toValue: calculateProgress(), duration:300, useNativeDriver:false,
     }).start();
   }, [data, activeGarment]);
 
   const loadPreviousMeasurements = async () => {
     if (!customerId) return;
-    
     try {
-      const q = query(
+      const q    = query(
         collection(db, "measurements"),
-        where("customerId", "==", customerId),
-        where("garment", "==", activeGarment),
-        orderBy("createdAt", "desc"),
-        limit(1)
+        where("customerId","==",customerId),
+        where("garment","==",activeGarment),
+        orderBy("createdAt","desc"), limit(1)
       );
-      
-      const snapshot = await getDocs(q);
-      if (!snapshot.empty) {
-        setPreviousMeasurements(snapshot.docs[0].data());
-      } else {
-        setPreviousMeasurements(null);
-      }
-    } catch (error) {
-      console.log("No previous measurements found");
-    }
+      const snap = await getDocs(q);
+      setPreviousMeasurements(snap.empty ? null : snap.docs[0].data());
+    } catch (e) { console.log(e); }
   };
 
   const calculateProgress = () => {
@@ -2181,420 +174,339 @@ export default function AddMeasurementScreen({ navigation, route }) {
     return (filled / fields.length) * 100;
   };
 
-  const showToast = (message, isError = false) => {
-    Vibration.vibrate(50);
-    setToastMsg({ text: message, isError });
-
+  const showToast = (msg, isError = false) => {
+    Vibration.vibrate(40);
+    setToastMsg({ text: msg, isError });
     Animated.sequence([
-      Animated.timing(toastAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
+      Animated.timing(toastAnim, { toValue:0,   duration:280, useNativeDriver:true }),
       Animated.delay(2000),
-      Animated.timing(toastAnim, {
-        toValue: 300,
-        duration: 300,
-        useNativeDriver: true,
-      }),
+      Animated.timing(toastAnim, { toValue:300, duration:280, useNativeDriver:true }),
     ]).start(() => setToastMsg(""));
   };
 
   const updateValue = (field, value) => {
-    // Validate input
     if (value && !/^\d*\.?\d*$/.test(value)) return;
-
-    setData((prev) => ({
-      ...prev,
-      [activeGarment]: {
-        ...(prev[activeGarment] || {}),
-        [field]: value,
-      },
+    setData((p) => ({
+      ...p, [activeGarment]: { ...(p[activeGarment]||{}), [field]: value },
     }));
-
-    // Validate range
     if (value && VALIDATION_RANGES[field]) {
-      const numValue = parseFloat(value);
+      const num = parseFloat(value);
       const [min, max] = VALIDATION_RANGES[field];
-      if (numValue < min || numValue > max) {
-        showToast(`${field}: Expected ${min}-${max} inches`, true);
-      }
+      if (num < min || num > max) showToast(`${field}: Expected ${min}–${max} in`, true);
     }
   };
 
-  const incrementValue = (field, amount) => {
-    Vibration.vibrate(30);
-    const current = parseFloat(data?.[activeGarment]?.[field] || 0);
-    const newValue = Math.max(0, current + amount).toFixed(1);
-    updateValue(field, newValue);
+  const incrementValue = (field, amt) => {
+    Vibration.vibrate(25);
+    const cur = parseFloat(data?.[activeGarment]?.[field] || 0);
+    updateValue(field, Math.max(0, cur + amt).toFixed(1));
   };
 
   const applyFitPreset = (type) => {
-    Vibration.vibrate(50);
-    const offset = FIT_PRESETS[type].offset;
+    Vibration.vibrate(40);
+    const offset  = FIT_PRESETS[type].offset;
     const updated = {};
-
-    Object.values(MEASUREMENTS[activeGarment])
-      .flat()
-      .forEach((f) => {
-        const base = parseFloat(data?.[activeGarment]?.[f] || 0);
-        if (!isNaN(base) && base > 0) {
-          updated[f] = (base + offset).toFixed(1);
-        }
-      });
-
-    setData((prev) => ({
-      ...prev,
-      [activeGarment]: {
-        ...(prev[activeGarment] || {}),
-        ...updated,
-      },
-    }));
-
+    Object.values(MEASUREMENTS[activeGarment]).flat().forEach((f) => {
+      const b = parseFloat(data?.[activeGarment]?.[f] || 0);
+      if (!isNaN(b) && b > 0) updated[f] = (b + offset).toFixed(1);
+    });
+    setData((p) => ({ ...p, [activeGarment]: { ...(p[activeGarment]||{}), ...updated } }));
     setFitType(type);
-    showToast(`${type} ${t.fitApplied}`);
+    showToast(`${type} fit applied`);
   };
 
   const loadPreviousData = () => {
     if (previousMeasurements) {
-      setData((prev) => ({
-        ...prev,
-        [activeGarment]: previousMeasurements.values,
-      }));
+      setData((p) => ({ ...p, [activeGarment]: previousMeasurements.values }));
       setFitType(previousMeasurements.fitType || "Regular");
       setShowPreviousModal(false);
-      showToast(t.previousLoaded);
+      showToast("Previous measurements loaded");
     }
   };
 
-  const changeGarment = (garmentName) => {
+  const changeGarment = (name) => {
     Animated.sequence([
-      Animated.timing(garmentAnim, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(garmentAnim, {
-        toValue: 0,
-        duration: 150,
-        useNativeDriver: true,
-      }),
+      Animated.timing(garmentAnim, { toValue:1, duration:130, useNativeDriver:true }),
+      Animated.timing(garmentAnim, { toValue:0, duration:130, useNativeDriver:true }),
     ]).start();
-
-    setActiveGarment(garmentName);
-    setPickerOpen(false);
-    Vibration.vibrate(40);
+    setActiveGarment(name); setPickerOpen(false); Vibration.vibrate(35);
   };
 
-  const allMeasurementsFilled = () => {
-    const fields = Object.values(MEASUREMENTS[activeGarment]).flat();
-    return fields.every(
-      (f) =>
-        data?.[activeGarment]?.[f] &&
-        data[activeGarment][f].toString().trim() !== ""
+  const allFilled = () =>
+    Object.values(MEASUREMENTS[activeGarment]).flat().every(
+      (f) => data?.[activeGarment]?.[f] && data[activeGarment][f].toString().trim() !== ""
     );
-  };
 
+  // BUG 9 FIX: robust save with proper error handling and stage update
   const handleSave = async () => {
-    if (!allMeasurementsFilled()) {
-      Alert.alert(t.incomplete, t.fillAllFields);
-      return;
+    if (!allFilled()) {
+      Alert.alert("Incomplete", "Please fill all measurement fields"); return;
     }
-
-    Vibration.vibrate([50, 100, 50]);
-
+    Vibration.vibrate([40, 80, 40]);
     try {
-      await addDoc(collection(db, "measurements"), {
-        customerId,
-        garment: activeGarment,
-        fitType,
-        values: data[activeGarment],
-        notes: notes || "",
-        createdAt: serverTimestamp(),
-      });
+      if (editMode) {
+        await updateDoc(doc(db, "measurements", measurementId), {
+          garment:   activeGarment,
+          fitType,
+          values:    data[activeGarment],
+          notes:     notes || "",
+          updatedAt: serverTimestamp(),
+        });
+        showToast("✓ Measurement updated");
+      } else {
+        // Save measurement
+        await addDoc(collection(db, "measurements"), {
+          customerId,
+          orderId:    orderId || null,
+          orderRefId: orderRefId || null,
+          garment:    activeGarment,
+          fitType,
+          values:     data[activeGarment],
+          notes:      notes || "",
+          createdAt:  serverTimestamp(),
+        });
 
-      showToast("✓ " + t.savedSuccessfully);
+        // BUG 9 FIX: update order stage with retry, log failure clearly
+        if (orderId) {
+          const updated = await updateOrderWithRetry(orderId, {
+            stage:   "Stitching",
+            garment: activeGarment,
+          });
+          if (!updated) {
+            // Non-blocking warning — measurement is already saved
+            console.warn(`Order ${orderId} stage update failed — measurement saved successfully`);
+          }
+        }
 
-      setTimeout(() => {
-        navigation.goBack();
-      }, 1000);
-    } catch (error) {
-      showToast(t.failedToSave, true);
+        showToast("✓ Measurements saved");
+      }
+      setTimeout(() => navigation.navigate("Home"), 900);
+    } catch (e) {
+      console.error("handleSave failed:", e);
+      showToast("Failed to save", true);
     }
   };
 
   const currentGarment = GARMENTS.find((g) => g.name === activeGarment);
-  const progress = calculateProgress();
-
-  // Get translated fit type names
-  const getFitTypeName = (type) => {
-    if (type === "Slim") return t.slim;
-    if (type === "Loose") return t.loose;
-    return t.regular;
-  };
+  const progress       = calculateProgress();
 
   return (
-    <SafeAreaView style={styles.safe}>
-      {/* HEADER */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={22} color="#E5E7EB" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t.measurements}</Text>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          <LanguageToggle />
-          <TouchableOpacity
-            onPress={() => previousMeasurements && setShowPreviousModal(true)}
-            style={styles.historyBtn}
-          >
-            <Ionicons
-              name="time-outline"
-              size={22}
-              color={previousMeasurements ? "#3B82F6" : "#475569"}
-            />
+    <View style={S.root}>
+      <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
+      <View style={S.blob1} /><View style={S.blob2} />
+
+      <SafeAreaView style={{ flex: 1 }} edges={["top","bottom"]}>
+
+        {/* ── Header ── */}
+        <Animated.View style={[S.header, { opacity: fadeAnim }]}>
+          <TouchableOpacity style={S.iconBtn} onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={21} color={C.text} />
           </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* PROGRESS BAR */}
-      <View style={styles.progressContainer}>
-        <View style={styles.progressBar}>
-          <Animated.View
-            style={[
-              styles.progressFill,
-              {
-                width: progressAnim.interpolate({
-                  inputRange: [0, 100],
-                  outputRange: ["0%", "100%"],
-                }),
-                backgroundColor:
-                  progress === 100 ? "#10B981" : progress > 50 ? "#3B82F6" : "#F59E0B",
-              },
-            ]}
-          />
-        </View>
-        <Text style={styles.progressText}>
-          {Math.round(progress)}% Complete • {Object.values(MEASUREMENTS[activeGarment]).flat().length} fields
-        </Text>
-      </View>
-
-      {/* GARMENT PICKER */}
-      <TouchableOpacity
-        style={[styles.garmentPicker, { borderColor: currentGarment?.color }]}
-        onPress={() => setPickerOpen(true)}
-        activeOpacity={0.7}
-      >
-        <View style={styles.garmentPickerContent}>
-          <View style={[styles.iconCircle, { backgroundColor: currentGarment?.color + "20" }]}>
-            <Ionicons name={currentGarment?.icon} size={24} color={currentGarment?.color} />
+          <View style={{ flex:1, alignItems:"center" }}>
+            <Text style={S.headerTitle}>
+              {editMode ? "Edit Measurement" : t?.measurements || "Measurements"}
+            </Text>
+            {(customerName || orderRefId) && (
+              <View style={{ flexDirection:"row", gap:6, marginTop:3 }}>
+                {customerName && (
+                  <View style={S.headerBadge}>
+                    <Ionicons name="person-outline" size={10} color={C.sub} />
+                    <Text style={S.headerBadgeTxt}>{customerName}</Text>
+                  </View>
+                )}
+                {orderRefId && (
+                  <View style={[S.headerBadge, { backgroundColor:C.primary+"12" }]}>
+                    <Text style={[S.headerBadgeTxt, { color:C.primary }]}>{orderRefId}</Text>
+                  </View>
+                )}
+              </View>
+            )}
           </View>
-          <View style={styles.garmentInfo}>
-            <Text style={styles.smallLabel}>{t.selectedGarment}</Text>
-            <Text style={styles.valueText}>{activeGarment}</Text>
+          <View style={{ flexDirection:"row", gap:8, alignItems:"center" }}>
+            <LanguageToggle />
+            {!editMode && (
+              <TouchableOpacity
+                style={[S.iconBtn, previousMeasurements && { borderColor:C.primary }]}
+                onPress={() => previousMeasurements && setShowPreviousModal(true)}>
+                <Ionicons name="time-outline" size={20} color={previousMeasurements ? C.primary : C.sub} />
+              </TouchableOpacity>
+            )}
           </View>
-          <Ionicons name="chevron-down" size={20} color="#94A3B8" />
-        </View>
-      </TouchableOpacity>
+        </Animated.View>
 
-      {/* FIT PRESET */}
-      <View style={styles.fitRow}>
-        {Object.entries(FIT_PRESETS).map(([type, config]) => (
+        {/* ── Progress bar ── */}
+        <Animated.View style={[S.progressWrap, { opacity:fadeAnim }]}>
+          <View style={{ flexDirection:"row", justifyContent:"space-between", marginBottom:6 }}>
+            <Text style={S.progressTxt}>
+              {Math.round(progress)}% Complete
+              <Text style={{ color:C.sub }}> · {Object.values(MEASUREMENTS[activeGarment]).flat().length} fields</Text>
+            </Text>
+            {progress === 100 && (
+              <View style={S.progressDoneBadge}>
+                <Ionicons name="checkmark" size={10} color="#FFF" />
+                <Text style={{ color:"#FFF", fontSize:10, fontWeight:"800" }}>All Filled</Text>
+              </View>
+            )}
+          </View>
+          <View style={S.progressTrack}>
+            <Animated.View style={[S.progressFill, {
+              width: progressAnim.interpolate({ inputRange:[0,100], outputRange:["0%","100%"] }),
+              backgroundColor: progress===100 ? C.success : progress>50 ? C.primary : C.amber,
+            }]}/>
+          </View>
+        </Animated.View>
+
+        {/* ── Garment picker ── */}
+        <Animated.View style={{ opacity:fadeAnim }}>
           <TouchableOpacity
-            key={type}
-            style={[
-              styles.fitChip,
-              fitType === type && [styles.fitChipActive, { backgroundColor: config.color }],
-            ]}
-            onPress={() => applyFitPreset(type)}
-            activeOpacity={0.7}
-          >
-            <Ionicons
-              name={config.icon}
-              size={18}
-              color={fitType === type ? "#FFFFFF" : "#94A3B8"}
-            />
-            <Text style={[styles.fitText, fitType === type && styles.fitTextActive]}>
-              {getFitTypeName(type)}
+            style={[S.garmentPicker, { borderColor:currentGarment?.color+"60" }]}
+            onPress={() => !editMode && setPickerOpen(true)}
+            activeOpacity={editMode ? 1 : 0.75}>
+            <View style={[S.garmentIcon, { backgroundColor:currentGarment?.color+"18" }]}>
+              <Ionicons name={currentGarment?.icon} size={24} color={currentGarment?.color} />
+            </View>
+            <View style={{ flex:1 }}>
+              <Text style={S.garmentLabel}>{editMode ? "Garment (locked)" : t?.selectedGarment || "Selected Garment"}</Text>
+              <Text style={S.garmentName}>{activeGarment}</Text>
+            </View>
+            {!editMode && (
+              <View style={[S.garmentChangeBtn, { backgroundColor:currentGarment?.color+"15" }]}>
+                <Ionicons name="chevron-down" size={16} color={currentGarment?.color} />
+                <Text style={[S.garmentChangeTxt, { color:currentGarment?.color }]}>Change</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </Animated.View>
+
+        {/* ── Fit presets ── */}
+        <Animated.View style={[S.fitRow, { opacity:fadeAnim }]}>
+          <Text style={S.fitLabel}>Fit Type:</Text>
+          {Object.entries(FIT_PRESETS).map(([type, cfg]) => {
+            const active = fitType === type;
+            return (
+              <TouchableOpacity key={type}
+                style={[S.fitChip, active && { backgroundColor:cfg.color, borderColor:cfg.color }]}
+                onPress={() => applyFitPreset(type)} activeOpacity={0.75}>
+                <Ionicons name={cfg.icon} size={15} color={active?"#FFF":C.sub}/>
+                <Text style={[S.fitTxt, active && { color:"#FFF" }]}>{type}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </Animated.View>
+
+        {/* ── Measurement form ── */}
+        <Animated.View style={[{ flex:1 }, {
+          opacity: garmentAnim.interpolate({ inputRange:[0,1], outputRange:[1,0.25] }),
+        }]}>
+          <ScrollView contentContainerStyle={S.form} showsVerticalScrollIndicator={false}>
+            {Object.entries(MEASUREMENTS[activeGarment]).map(([section, fields]) => (
+              <View key={section} style={S.card}>
+                <View style={S.cardHeader}>
+                  <Text style={S.cardTitle}>{section}</Text>
+                  <View style={[S.badge, {
+                    backgroundColor: fields.filter((f)=>data?.[activeGarment]?.[f]).length===fields.length
+                      ? C.success+"15" : "#EFF6FF"
+                  }]}>
+                    <Text style={[S.badgeTxt, {
+                      color: fields.filter((f)=>data?.[activeGarment]?.[f]).length===fields.length
+                        ? C.success : C.primary
+                    }]}>
+                      {fields.filter((f)=>data?.[activeGarment]?.[f]).length}/{fields.length}
+                    </Text>
+                  </View>
+                </View>
+                <View style={S.divider}/>
+                {fields.map((field) => {
+                  const value    = data?.[activeGarment]?.[field] || "";
+                  const isFilled = value && value.toString().trim() !== "";
+                  const isFocused= focusedField === field;
+                  return (
+                    <View key={field} style={[S.measureRow, isFocused&&S.measureRowFocused, isFilled&&S.measureRowFilled]}>
+                      <View style={S.measureLabelRow}>
+                        <View style={[S.dot, isFilled&&S.dotFilled]}/>
+                        <Text style={[S.measureLabel, isFilled&&S.measureLabelFilled]}>{field}</Text>
+                        {isFilled && <Text style={S.measureValuePreview}>{value} in</Text>}
+                      </View>
+                      <View style={S.controls}>
+                        <TouchableOpacity style={S.incBtn} onPress={() => incrementValue(field,-0.5)}>
+                          <Ionicons name="remove" size={16} color={C.sub}/>
+                        </TouchableOpacity>
+                        <View style={[S.inputWrap, isFocused&&S.inputWrapFocused]}>
+                          <TextInput style={S.measureInput} keyboardType="decimal-pad"
+                            placeholder="0.0" placeholderTextColor="#C4C9D4"
+                            value={value} onChangeText={(v) => updateValue(field,v)}
+                            onFocus={() => setFocusedField(field)}
+                            onBlur={()  => setFocusedField(null)}/>
+                          <Text style={S.unit}>in</Text>
+                        </View>
+                        <TouchableOpacity style={S.incBtn} onPress={() => incrementValue(field,0.5)}>
+                          <Ionicons name="add" size={16} color={C.sub}/>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            ))}
+
+            {/* Notes */}
+            <View style={S.card}>
+              <Text style={S.cardTitle}>{t?.additionalNotes || "Additional Notes"}</Text>
+              <View style={S.divider}/>
+              <TextInput style={S.notesInput}
+                placeholder={t?.addNotesPlaceholder || "Add special instructions..."}
+                placeholderTextColor="#9CA3AF" multiline numberOfLines={3}
+                value={notes} onChangeText={setNotes} textAlignVertical="top"/>
+            </View>
+            <View style={{ height:110 }}/>
+          </ScrollView>
+        </Animated.View>
+
+        {/* ── Save button ── */}
+        <View style={S.footer}>
+          {!allFilled() && (
+            <View style={S.fillHint}>
+              <Ionicons name="information-circle-outline" size={14} color={C.sub}/>
+              <Text style={S.fillHintTxt}>
+                {Object.values(MEASUREMENTS[activeGarment]).flat().filter(
+                  (f) => !data?.[activeGarment]?.[f]
+                ).length} fields remaining
+              </Text>
+            </View>
+          )}
+          <TouchableOpacity
+            style={[S.saveBtn, progress===100 && S.saveBtnReady]}
+            onPress={handleSave} activeOpacity={0.9}>
+            <Ionicons name={progress===100?"checkmark-circle":"save-outline"} size={21} color="#FFF"/>
+            <Text style={S.saveTxt}>
+              {editMode
+                ? (progress===100 ? "Update Measurement" : "Fill all fields")
+                : (progress===100 ? t?.saveAndContinue||"Save & Continue" : t?.saveMeasurements||"Save Measurements")}
             </Text>
           </TouchableOpacity>
-        ))}
-      </View>
+        </View>
 
-      {/* FORM */}
-      <Animated.View
-        style={[
-          styles.formContainer,
-          {
-            opacity: garmentAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, 0.3],
-            }),
-          },
-        ]}
-      >
-        <ScrollView
-          contentContainerStyle={styles.form}
-          showsVerticalScrollIndicator={false}
-        >
-          {Object.entries(MEASUREMENTS[activeGarment]).map(([section, fields]) => (
-            <View key={section} style={styles.card}>
-              <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle}>{section}</Text>
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>
-                    {fields.filter((f) => data?.[activeGarment]?.[f]).length}/{fields.length}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.divider} />
+      </SafeAreaView>
 
-              {fields.map((field, idx) => {
-                const value = data?.[activeGarment]?.[field] || "";
-                const isFilled = value && value.toString().trim() !== "";
-                const isFocused = focusedField === field;
-
-                return (
-                  <View
-                    key={field}
-                    style={[
-                      styles.measureRow,
-                      isFocused && styles.measureRowFocused,
-                    ]}
-                  >
-                    <View style={styles.measureLabelContainer}>
-                      <View
-                        style={[
-                          styles.measureDot,
-                          isFilled && styles.measureDotFilled,
-                        ]}
-                      />
-                      <Text style={styles.measureLabel}>{field}</Text>
-                    </View>
-
-                    <View style={styles.measureControls}>
-                      <TouchableOpacity
-                        style={styles.incrementBtn}
-                        onPress={() => incrementValue(field, -0.5)}
-                        activeOpacity={0.7}
-                      >
-                        <Ionicons name="remove" size={16} color="#64748B" />
-                      </TouchableOpacity>
-
-                      <View
-                        style={[
-                          styles.measureInputWrap,
-                          isFocused && styles.measureInputWrapFocused,
-                        ]}
-                      >
-                        <TextInput
-                          style={styles.measureInput}
-                          keyboardType="decimal-pad"
-                          placeholder="0.0"
-                          placeholderTextColor="#475569"
-                          value={value}
-                          onChangeText={(v) => updateValue(field, v)}
-                          onFocus={() => setFocusedField(field)}
-                          onBlur={() => setFocusedField(null)}
-                        />
-                        <Text style={styles.unit}>in</Text>
-                      </View>
-
-                      <TouchableOpacity
-                        style={styles.incrementBtn}
-                        onPress={() => incrementValue(field, 0.5)}
-                        activeOpacity={0.7}
-                      >
-                        <Ionicons name="add" size={16} color="#64748B" />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                );
-              })}
-            </View>
-          ))}
-
-          {/* NOTES SECTION */}
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>{t.additionalNotes}</Text>
-            <View style={styles.divider} />
-            <TextInput
-              style={styles.notesInput}
-              placeholder={t.addNotesPlaceholder}
-              placeholderTextColor="#64748B"
-              multiline
-              numberOfLines={3}
-              value={notes}
-              onChangeText={setNotes}
-              textAlignVertical="top"
-            />
-          </View>
-
-          <View style={{ height: 100 }} />
-        </ScrollView>
-      </Animated.View>
-
-      {/* SAVE BUTTON */}
-      <View style={styles.saveContainer}>
-        <TouchableOpacity
-          style={[
-            styles.saveBtn,
-            progress === 100 && styles.saveBtnReady,
-          ]}
-          onPress={handleSave}
-          activeOpacity={0.8}
-        >
-          <Ionicons
-            name={progress === 100 ? "checkmark-circle" : "save-outline"}
-            size={22}
-            color="#FFFFFF"
-          />
-          <Text style={styles.saveText}>
-            {progress === 100 ? t.saveAndContinue : t.saveMeasurements}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* GARMENT MODAL */}
-      <Modal
-        transparent
-        visible={pickerOpen}
-        animationType="slide"
-        onRequestClose={() => setPickerOpen(false)}
-      >
-        <TouchableOpacity
-          style={styles.modalBg}
-          activeOpacity={1}
-          onPress={() => setPickerOpen(false)}
-        >
-          <View style={styles.modalCard}>
-            <View style={styles.modalHandle} />
-            <Text style={styles.modalTitle}>Select Garment Type</Text>
-
+      {/* ── Garment picker modal ── */}
+      <Modal transparent visible={pickerOpen && !editMode} animationType="slide"
+        onRequestClose={() => setPickerOpen(false)}>
+        <TouchableOpacity style={S.modalBg} activeOpacity={1} onPress={() => setPickerOpen(false)}>
+          <View style={S.modalCard}>
+            <View style={S.modalHandle}/>
+            <Text style={S.modalTitle}>Select Garment Type</Text>
             <ScrollView showsVerticalScrollIndicator={false}>
-              {GARMENTS.map((garment) => (
-                <TouchableOpacity
-                  key={garment.name}
-                  style={[
-                    styles.modalItem,
-                    activeGarment === garment.name && styles.modalItemActive,
-                  ]}
-                  onPress={() => changeGarment(garment.name)}
-                  activeOpacity={0.7}
-                >
-                  <View style={[styles.modalIconCircle, { backgroundColor: garment.color + "20" }]}>
-                    <Ionicons name={garment.icon} size={22} color={garment.color} />
+              {GARMENTS.map((g) => (
+                <TouchableOpacity key={g.name}
+                  style={[S.modalItem, activeGarment===g.name && S.modalItemActive]}
+                  onPress={() => changeGarment(g.name)} activeOpacity={0.7}>
+                  <View style={[S.modalIconCircle, { backgroundColor:g.color+"18" }]}>
+                    <Ionicons name={g.icon} size={21} color={g.color}/>
                   </View>
-                  <Text
-                    style={[
-                      styles.modalText,
-                      activeGarment === garment.name && styles.modalTextActive,
-                    ]}
-                  >
-                    {garment.name}
+                  <Text style={[S.modalItemTxt, activeGarment===g.name && S.modalItemTxtActive]}>
+                    {g.name}
                   </Text>
-                  {activeGarment === garment.name && (
-                    <Ionicons name="checkmark-circle" size={22} color={garment.color} />
-                  )}
+                  {activeGarment===g.name && <Ionicons name="checkmark-circle" size={20} color={g.color}/>}
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -2602,476 +514,135 @@ export default function AddMeasurementScreen({ navigation, route }) {
         </TouchableOpacity>
       </Modal>
 
-      {/* PREVIOUS MEASUREMENTS MODAL */}
-      <Modal
-        transparent
-        visible={showPreviousModal}
-        animationType="fade"
-        onRequestClose={() => setShowPreviousModal(false)}
-      >
-        <TouchableOpacity
-          style={styles.modalBg}
-          activeOpacity={1}
-          onPress={() => setShowPreviousModal(false)}
-        >
-          <View style={styles.previousModal}>
-            <Ionicons name="time-outline" size={32} color="#3B82F6" />
-            <Text style={styles.previousTitle}>{t.loadPrevious}</Text>
-            <Text style={styles.previousSubtitle}>
-              {t.foundSaved} {activeGarment}
-            </Text>
-
-            <View style={styles.previousButtons}>
-              <TouchableOpacity
-                style={styles.previousBtnCancel}
-                onPress={() => setShowPreviousModal(false)}
-              >
-                <Text style={styles.previousBtnTextCancel}>{t.cancel}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.previousBtnLoad}
-                onPress={loadPreviousData}
-              >
-                <Text style={styles.previousBtnTextLoad}>{t.loadData}</Text>
-              </TouchableOpacity>
+      {/* ── Previous measurements modal ── */}
+      {!editMode && (
+        <Modal transparent visible={showPreviousModal} animationType="fade"
+          onRequestClose={() => setShowPreviousModal(false)}>
+          <TouchableOpacity style={S.modalBg} activeOpacity={1} onPress={() => setShowPreviousModal(false)}>
+            <View style={S.prevModal}>
+              <View style={S.prevIconWrap}>
+                <Ionicons name="time-outline" size={28} color={C.primary}/>
+              </View>
+              <Text style={S.prevTitle}>Load Previous Measurements?</Text>
+              <Text style={S.prevSub}>Found saved {activeGarment} data for this customer</Text>
+              {previousMeasurements?.fitType && (
+                <View style={S.prevFitBadge}>
+                  <Text style={S.prevFitBadgeTxt}>Fit: {previousMeasurements.fitType}</Text>
+                </View>
+              )}
+              <View style={S.prevBtns}>
+                <TouchableOpacity style={S.prevBtnCancel} onPress={() => setShowPreviousModal(false)}>
+                  <Text style={S.prevBtnCancelTxt}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={S.prevBtnLoad} onPress={loadPreviousData}>
+                  <Ionicons name="download-outline" size={16} color="#FFF"/>
+                  <Text style={S.prevBtnLoadTxt}>Load Data</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
-      </Modal>
+          </TouchableOpacity>
+        </Modal>
+      )}
 
-      {/* TOAST */}
-      {toastMsg && (
-        <Animated.View
-          style={[
-            styles.toast,
-            {
-              backgroundColor: toastMsg.isError ? "#DC2626" : "#059669",
-              transform: [{ translateX: toastAnim }],
-            },
-          ]}
-        >
-          <Ionicons
-            name={toastMsg.isError ? "alert-circle" : "checkmark-circle"}
-            size={20}
-            color="#FFFFFF"
-          />
-          <Text style={styles.toastText}>{toastMsg.text}</Text>
+      {/* ── Toast ── */}
+      {!!toastMsg && (
+        <Animated.View style={[S.toast, {
+          backgroundColor: toastMsg.isError ? C.danger : C.success,
+          transform: [{ translateX: toastAnim }],
+        }]}>
+          <Ionicons name={toastMsg.isError?"alert-circle":"checkmark-circle"} size={18} color="#FFF"/>
+          <Text style={S.toastTxt}>{toastMsg.text}</Text>
         </Animated.View>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
-/* ---------------- STYLES (ALL YOUR ORIGINAL STYLES) ---------------- */
+const S = StyleSheet.create({
+  root:     {flex:1,backgroundColor:C.bg},
+  blob1:    {position:"absolute",top:-60,right:-40,width:200,height:200,borderRadius:100,backgroundColor:"rgba(59,130,246,0.06)"},
+  blob2:    {position:"absolute",bottom:-40,left:-30,width:160,height:160,borderRadius:80,backgroundColor:"rgba(163,230,53,0.05)"},
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#0B0F1A" },
+  header:   {flexDirection:"row",alignItems:"center",justifyContent:"space-between",paddingHorizontal:18,paddingVertical:12},
+  iconBtn:  {width:40,height:40,borderRadius:12,backgroundColor:C.card,borderWidth:1,borderColor:C.border,justifyContent:"center",alignItems:"center",shadowColor:"#000",shadowOffset:{width:0,height:1},shadowOpacity:0.05,shadowRadius:4,elevation:2},
+  headerTitle:{fontSize:17,fontWeight:"900",color:C.text,letterSpacing:-0.4},
+  headerBadge:{flexDirection:"row",alignItems:"center",gap:4,backgroundColor:C.border,paddingHorizontal:8,paddingVertical:3,borderRadius:20},
+  headerBadgeTxt:{fontSize:10,fontWeight:"700",color:C.sub},
 
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  backBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: "#1E293B",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  historyBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: "#1E293B",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  headerTitle: {
-    color: "#FFFFFF",
-    fontSize: 20,
-    fontWeight: "700",
-    letterSpacing: 0.3,
-  },
+  progressWrap:{paddingHorizontal:18,marginBottom:12},
+  progressTrack:{height:7,backgroundColor:"#E5E7EB",borderRadius:10,overflow:"hidden"},
+  progressFill:{height:"100%",borderRadius:10},
+  progressTxt:{fontSize:12,color:C.text,fontWeight:"700"},
+  progressDoneBadge:{flexDirection:"row",alignItems:"center",gap:4,backgroundColor:C.success,paddingHorizontal:8,paddingVertical:3,borderRadius:20},
 
-  progressContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 16,
-  },
-  progressBar: {
-    height: 6,
-    backgroundColor: "#1E293B",
-    borderRadius: 10,
-    overflow: "hidden",
-    marginBottom: 8,
-  },
-  progressFill: {
-    height: "100%",
-    borderRadius: 10,
-  },
-  progressText: {
-    color: "#94A3B8",
-    fontSize: 12,
-    fontWeight: "600",
-  },
+  garmentPicker:{flexDirection:"row",alignItems:"center",marginHorizontal:18,marginBottom:12,backgroundColor:C.card,borderRadius:16,padding:14,borderWidth:1.5,shadowColor:"#000",shadowOffset:{width:0,height:2},shadowOpacity:0.04,shadowRadius:8,elevation:2,gap:12},
+  garmentIcon:{width:46,height:46,borderRadius:14,justifyContent:"center",alignItems:"center"},
+  garmentLabel:{fontSize:10,color:C.sub,fontWeight:"700",textTransform:"uppercase",letterSpacing:0.5,marginBottom:2},
+  garmentName:{fontSize:17,fontWeight:"800",color:C.text},
+  garmentChangeBtn:{flexDirection:"row",alignItems:"center",gap:4,paddingHorizontal:10,paddingVertical:7,borderRadius:10},
+  garmentChangeTxt:{fontSize:12,fontWeight:"700"},
 
-  garmentPicker: {
-    marginHorizontal: 16,
-    marginBottom: 12,
-    padding: 16,
-    borderRadius: 18,
-    backgroundColor: "#151E32",
-    borderWidth: 2,
-  },
-  garmentPickerContent: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  iconCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  garmentInfo: {
-    flex: 1,
-  },
-  smallLabel: {
-    color: "#64748B",
-    fontSize: 11,
-    fontWeight: "600",
-    marginBottom: 2,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  valueText: {
-    color: "#E2E8F0",
-    fontSize: 18,
-    fontWeight: "700",
-  },
+  fitRow:   {flexDirection:"row",paddingHorizontal:18,marginBottom:14,gap:8,alignItems:"center"},
+  fitLabel: {fontSize:11,fontWeight:"700",color:C.sub,textTransform:"uppercase",letterSpacing:0.4},
+  fitChip:  {flex:1,flexDirection:"row",alignItems:"center",justifyContent:"center",paddingVertical:10,borderRadius:12,backgroundColor:C.card,borderWidth:1.5,borderColor:C.border,gap:5,shadowColor:"#000",shadowOffset:{width:0,height:1},shadowOpacity:0.03,shadowRadius:4,elevation:1},
+  fitTxt:   {color:C.sub,fontWeight:"700",fontSize:12},
 
-  fitRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    marginBottom: 16,
-    gap: 8,
-  },
-  fitChip: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    borderRadius: 14,
-    backgroundColor: "#1E293B",
-    gap: 6,
-  },
-  fitChipActive: {
-    backgroundColor: "#2563EB",
-    transform: [{ scale: 1.02 }],
-  },
-  fitText: {
-    color: "#94A3B8",
-    fontWeight: "700",
-    fontSize: 13,
-  },
-  fitTextActive: {
-    color: "#FFFFFF",
-  },
+  form:     {paddingHorizontal:18,paddingTop:4,paddingBottom:20},
+  card:     {backgroundColor:C.card,borderRadius:18,padding:16,marginBottom:14,borderWidth:1,borderColor:C.border,shadowColor:"#000",shadowOffset:{width:0,height:2},shadowOpacity:0.04,shadowRadius:8,elevation:2},
+  cardHeader:{flexDirection:"row",justifyContent:"space-between",alignItems:"center"},
+  cardTitle:{fontSize:15,fontWeight:"800",color:C.text},
+  badge:    {paddingHorizontal:10,paddingVertical:4,borderRadius:20},
+  badgeTxt: {fontSize:12,fontWeight:"800"},
+  divider:  {height:1,backgroundColor:C.border,marginVertical:12},
 
-  formContainer: {
-    flex: 1,
-  },
-  form: {
-    padding: 16,
-    paddingBottom: 120,
-  },
+  measureRow:{marginBottom:10,padding:11,borderRadius:12,backgroundColor:C.inputBg,borderWidth:1,borderColor:"transparent"},
+  measureRowFocused:{borderColor:C.primary,backgroundColor:"#EFF6FF"},
+  measureRowFilled:{borderColor:C.success+"30"},
+  measureLabelRow:{flexDirection:"row",alignItems:"center",marginBottom:9,gap:8},
+  dot:      {width:7,height:7,borderRadius:3.5,backgroundColor:C.border},
+  dotFilled:{backgroundColor:C.success},
+  measureLabel:{flex:1,fontSize:13,color:C.sub,fontWeight:"600"},
+  measureLabelFilled:{color:C.text},
+  measureValuePreview:{fontSize:11,color:C.primary,fontWeight:"700"},
 
-  card: {
-    backgroundColor: "#151E32",
-    borderRadius: 20,
-    padding: 18,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "#1E293B",
-  },
-  cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  cardTitle: {
-    color: "#E2E8F0",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-  badge: {
-    backgroundColor: "#1E293B",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  badgeText: {
-    color: "#3B82F6",
-    fontSize: 12,
-    fontWeight: "700",
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#1E293B",
-    marginVertical: 12,
-  },
+  controls: {flexDirection:"row",alignItems:"center"},
+  incBtn:   {width:36,height:36,borderRadius:11,backgroundColor:C.card,borderWidth:1,borderColor:C.border,justifyContent:"center",alignItems:"center",shadowColor:"#000",shadowOffset:{width:0,height:1},shadowOpacity:0.04,shadowRadius:3,elevation:1},
+  inputWrap:{flexDirection:"row",alignItems:"center",backgroundColor:C.card,borderRadius:11,borderWidth:1.5,borderColor:C.border,paddingHorizontal:10,height:42,flex:1,marginHorizontal:8},
+  inputWrapFocused:{borderColor:C.primary},
+  measureInput:{flex:1,color:C.text,fontSize:15,fontWeight:"700",textAlign:"center"},
+  unit:     {color:C.sub,fontSize:12,fontWeight:"600",marginLeft:4},
 
-  measureRow: {
-    marginBottom: 14,
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: "#0F1A2A",
-  },
-  measureRowFocused: {
-    backgroundColor: "#1E293B",
-    borderWidth: 1,
-    borderColor: "#3B82F6",
-  },
-  measureLabelContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  measureDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#334155",
-    marginRight: 10,
-  },
-  measureDotFilled: {
-    backgroundColor: "#10B981",
-  },
-  measureLabel: {
-    flex: 1,
-    color: "#CBD5E1",
-    fontSize: 14,
-    fontWeight: "600",
-  },
+  notesInput:{color:C.text,fontSize:14,fontWeight:"500",minHeight:72,backgroundColor:C.inputBg,padding:10,borderRadius:10},
 
-  measureControls: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  incrementBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: "#1E293B",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  measureInputWrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#0B0F1A",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#1E293B",
-    paddingHorizontal: 12,
-    height: 44,
-    flex: 1,
-    marginHorizontal: 8,
-  },
-  measureInputWrapFocused: {
-    borderColor: "#3B82F6",
-    backgroundColor: "#0F172A",
-  },
-  measureInput: {
-    flex: 1,
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "700",
-    textAlign: "center",
-  },
-  unit: {
-    color: "#64748B",
-    fontSize: 12,
-    fontWeight: "600",
-    marginLeft: 4,
-  },
+  footer:   {position:"absolute",bottom:0,left:0,right:0,padding:16,paddingBottom:20,backgroundColor:C.bg,borderTopWidth:1,borderTopColor:C.border},
+  fillHint: {flexDirection:"row",alignItems:"center",gap:6,backgroundColor:C.inputBg,borderRadius:10,paddingHorizontal:12,paddingVertical:7,marginBottom:10,borderWidth:1,borderColor:C.border},
+  fillHintTxt:{fontSize:12,color:C.sub,fontWeight:"500"},
+  saveBtn:  {flexDirection:"row",backgroundColor:C.primary,paddingVertical:15,borderRadius:14,alignItems:"center",justifyContent:"center",gap:9,shadowColor:C.primary,shadowOffset:{width:0,height:6},shadowOpacity:0.25,shadowRadius:12,elevation:6},
+  saveBtnReady:{backgroundColor:C.success,shadowColor:C.success},
+  saveTxt:  {color:"#FFF",fontSize:15,fontWeight:"800"},
 
-  notesInput: {
-    color: "#CBD5E1",
-    fontSize: 14,
-    minHeight: 80,
-    padding: 12,
-    backgroundColor: "#0F1A2A",
-    borderRadius: 12,
-  },
+  modalBg:  {flex:1,backgroundColor:"rgba(0,0,0,0.25)",justifyContent:"flex-end"},
+  modalCard:{backgroundColor:C.card,paddingTop:10,paddingBottom:34,paddingHorizontal:20,borderTopLeftRadius:28,borderTopRightRadius:28,maxHeight:"70%",shadowColor:"#000",shadowOffset:{width:0,height:-4},shadowOpacity:0.08,shadowRadius:16,elevation:12},
+  modalHandle:{width:36,height:4,backgroundColor:C.border,borderRadius:2,alignSelf:"center",marginBottom:18},
+  modalTitle:{fontSize:17,fontWeight:"900",color:C.text,marginBottom:14},
+  modalItem:{flexDirection:"row",alignItems:"center",paddingVertical:13,paddingHorizontal:14,borderRadius:14,marginBottom:8,backgroundColor:C.inputBg,borderWidth:1,borderColor:C.border},
+  modalItemActive:{backgroundColor:"#EFF6FF",borderColor:C.primary+"40"},
+  modalIconCircle:{width:38,height:38,borderRadius:12,justifyContent:"center",alignItems:"center",marginRight:12},
+  modalItemTxt:{flex:1,color:C.sub,fontSize:15,fontWeight:"600"},
+  modalItemTxtActive:{color:C.text,fontWeight:"800"},
 
-  saveContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 20,
-    paddingBottom: 30,
-    backgroundColor: "#0B0F1A",
-    borderTopWidth: 1,
-    borderTopColor: "#1E293B",
-  },
-  saveBtn: {
-    flexDirection: "row",
-    backgroundColor: "#2563EB",
-    paddingVertical: 18,
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-  },
-  saveBtnReady: {
-    backgroundColor: "#10B981",
-  },
-  saveText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "700",
-  },
+  prevModal:{backgroundColor:C.card,marginHorizontal:28,padding:24,borderRadius:22,alignItems:"center",borderWidth:1,borderColor:C.border,shadowColor:"#000",shadowOffset:{width:0,height:8},shadowOpacity:0.12,shadowRadius:24,elevation:14},
+  prevIconWrap:{width:56,height:56,borderRadius:18,backgroundColor:"#EFF6FF",justifyContent:"center",alignItems:"center",marginBottom:14},
+  prevTitle:{fontSize:17,fontWeight:"900",color:C.text,marginBottom:8,textAlign:"center"},
+  prevSub:  {fontSize:13,color:C.sub,textAlign:"center",marginBottom:12,lineHeight:19},
+  prevFitBadge:{backgroundColor:C.primary+"15",paddingHorizontal:14,paddingVertical:5,borderRadius:20,marginBottom:18},
+  prevFitBadgeTxt:{fontSize:12,fontWeight:"700",color:C.primary},
+  prevBtns: {flexDirection:"row",gap:10,width:"100%"},
+  prevBtnCancel:{flex:1,paddingVertical:13,borderRadius:12,backgroundColor:C.inputBg,alignItems:"center",borderWidth:1,borderColor:C.border},
+  prevBtnCancelTxt:{color:C.sub,fontSize:14,fontWeight:"700"},
+  prevBtnLoad:{flex:1,flexDirection:"row",paddingVertical:13,borderRadius:12,backgroundColor:C.primary,alignItems:"center",justifyContent:"center",gap:6},
+  prevBtnLoadTxt:{color:"#FFF",fontSize:14,fontWeight:"800"},
 
-  modalBg: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    justifyContent: "flex-end",
-  },
-  modalCard: {
-    backgroundColor: "#0F172A",
-    paddingTop: 10,
-    paddingBottom: 30,
-    paddingHorizontal: 20,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    maxHeight: "70%",
-  },
-  modalHandle: {
-    width: 40,
-    height: 4,
-    backgroundColor: "#334155",
-    borderRadius: 2,
-    alignSelf: "center",
-    marginBottom: 20,
-  },
-  modalTitle: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 16,
-  },
-  modalItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderRadius: 14,
-    marginBottom: 8,
-    backgroundColor: "#1E293B",
-  },
-  modalItemActive: {
-    backgroundColor: "#1E3A5F",
-  },
-  modalIconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  modalText: {
-    flex: 1,
-    color: "#CBD5E1",
-    fontSize: 15,
-    fontWeight: "600",
-  },
-  modalTextActive: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-  },
-
-  previousModal: {
-    backgroundColor: "#0F172A",
-    marginHorizontal: 30,
-    padding: 24,
-    borderRadius: 24,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#1E293B",
-  },
-  previousTitle: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "700",
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  previousSubtitle: {
-    color: "#94A3B8",
-    fontSize: 14,
-    textAlign: "center",
-    marginBottom: 24,
-  },
-  previousButtons: {
-    flexDirection: "row",
-    gap: 12,
-    width: "100%",
-  },
-  previousBtnCancel: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 14,
-    backgroundColor: "#1E293B",
-    alignItems: "center",
-  },
-  previousBtnLoad: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 14,
-    backgroundColor: "#3B82F6",
-    alignItems: "center",
-  },
-  previousBtnTextCancel: {
-    color: "#CBD5E1",
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  previousBtnTextLoad: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    fontWeight: "700",
-  },
-
-  toast: {
-    position: "absolute",
-    top: 60,
-    right: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 14,
-    paddingHorizontal: 18,
-    borderRadius: 16,
-    gap: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  toastText: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-    fontSize: 14,
-  },
+  toast:    {position:"absolute",top:54,right:18,flexDirection:"row",alignItems:"center",paddingVertical:12,paddingHorizontal:16,borderRadius:14,gap:8,shadowColor:"#000",shadowOffset:{width:0,height:4},shadowOpacity:0.15,shadowRadius:10,elevation:8},
+  toastTxt: {color:"#FFF",fontWeight:"700",fontSize:13},
 });
